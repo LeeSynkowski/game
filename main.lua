@@ -17,14 +17,19 @@ local centerY = display.contentCenterY
 local _W = display.contentWidth
 local _H = display.contentHeight
 
---Task 1: Screen Rectangles
-local graphicsRectangle = display.newRect( 110, 110, 50, 50)
-graphicsRectangle:setFillColor( 0, 1, 0 )
+--Set Default Anchoring of Images to Top Left
+display.setDefault( "anchorX", 0)
+display.setDefault( "anchorY", 0)
 
-print("_W ",_W)
-print("_H ",_H)
-print("centerX ",centerX)
-print("centerY ",centerY)
+--Task 1: Screen Rectangles
+local graphicsArea = display.newRect( 0, 0, _W, (2 * _H) / 3)
+graphicsArea:setFillColor( 0, 1, 0 )
+
+local infoArea = display.newRect( 0, (2 * _H) / 3, _W, (_H) / 9)
+infoArea:setFillColor( 1, 0, 0 )
+
+local menuArea = display.newRect( 0, (7 * _H) / 9, _W, (2 * _H) / 9)
+menuArea:setFillColor( 0, 0, 1 )
 
 --sceneGroup:insert( graphicsRectangle )
 --label
