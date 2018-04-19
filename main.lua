@@ -50,7 +50,7 @@ local columnData =
     }
 }
  
--- Create the widget
+
 local pickerWheel = widget.newPickerWheel(
 {
     x = 0, 
@@ -62,13 +62,30 @@ local pickerWheel = widget.newPickerWheel(
     fontSize = 20
 })
  
--- Get the table of current values for all columns
--- This can be performed on a button tap, timer execution, or other event
-local values = pickerWheel:getValues()
+local widget = require( "widget" )
  
--- Get the value for each column in the wheel, by column index
---local currentStyle = values[1].value
---local currentColor = values[2].value
---local currentSize = values[3].value
+-- Function to handle button events
+local function handleButtonEvent( event )
  
---print( currentStyle, currentColor, currentSize )
+    if ( "ended" == event.phase ) then
+        print( "Button was pressed and released" )
+    end
+end
+ 
+
+local strongButton = widget.newButton(
+    {
+        label = "Strong",
+        onEvent = handleButtonEvent,
+        emboss = false,
+        -- Properties for a rounded rectangle button
+        shape = "circle",
+        radius= 1/18 * _H,
+        fillColor = { default={1,0.6,0,1}, over={1,0.1,0.7,0.4} },
+        strokeColor = { default={1,0.4,0,1}, over={0.8,0.8,1,1} },
+        strokeWidth = 4,
+        top = (7 * _H) / 9 + 1/36 * _H,
+        left = _W/2 + 1/36 * _H
+    }
+)
+ 
