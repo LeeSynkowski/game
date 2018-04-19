@@ -42,9 +42,9 @@ menuArea:setFillColor( 0, 0, 1 )
 local columnData = 
 { 
     { 
-        align = "Left",
+        align = "right",
         width = _W / 2,
-        labelPadding = _W/8,
+        labelPadding = 10,
         startIndex = 1,
         labels = { "Shoot", "Pull Guard", "Foot Sweep" }
     }
@@ -59,7 +59,7 @@ local pickerWheel = widget.newPickerWheel(
     style = "resizable",
     width = _W,
     rowHeight = ((2 * _H) / 9)/5,
-    fontSize = 32
+    fontSize = 20
 })
  
 -- Get the table of current values for all columns
