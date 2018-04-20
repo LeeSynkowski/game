@@ -88,4 +88,20 @@ local strongButton = widget.newButton(
         left = _W/2 + 1/36 * _H
     }
 )
+
+local technicalButton = widget.newButton(
+    {
+        label = "Tech",
+        onEvent = handleButtonEvent,
+        emboss = false,
+        -- Properties for a rounded rectangle button
+        shape = "circle",
+        radius= 1/18 * _H,
+        fillColor = { default={0.7,0.8,0,1}, over={1,0.1,0.7,0.4} },
+        strokeColor = { default={1,0.4,0,1}, over={0.8,0.8,1,1} },
+        strokeWidth = 4,
+        top = _H - (_H/9) +  - 1/36 * _H,
+        left = (3 * _W)/4 + 1/72 * _H -- * _H
+    }
+)
  
