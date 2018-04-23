@@ -1,4 +1,6 @@
 local composer = require( "composer" )
+
+local character = require("character")
  
 local scene = composer.newScene()
  
@@ -10,16 +12,56 @@ local widget = require( "widget" )
 
 local _W = display.contentWidth
 local _H = display.contentHeight
- 
+
+local selectedAttackValue = ''
+local currentPosition = ''
+
+local positionValues = {"Standing","Guard Top","Guard Bottom","Mount Top","Mount Bottom","Side Control Top","Side Control Bottom"}
+local attackValues = { "Shoot", "Pull Guard", "Foot Sweep" }
+
  -- Function to handle button events
-local function handleButtonEvent( event )
- 
+local function handleStrongButton( event )
+    actionText.text = "Strong " .. selectedAttackValue
+    
     if ( "ended" == event.phase ) then
-        print( "Button was pressed and released" )
+      
+      
+        print( "Strong was pressed and released" )
+    end
+end
+
+ -- Function to handle button events
+local function handleTechnicalButton( event )
+    actionText.text = "Technical  " .. selectedAttackValue
+    
+    if ( "ended" == event.phase ) then
+        print( "Technical was pressed and released" )
     end
 end
  
-actionText = display.newText("", display.contentCenterX, display.contentHeight- 16)
+actionText = display.newText("",  _W/3, display.contentHeight)
+
+local columnData = 
+{ 
+    { 
+        align = "right",
+        width = _W / 2,
+        labelPadding = 10,
+        startIndex = 1,
+        labels = { "Shoot", "Pull Guard", "Foot Sweep" }
+    }
+}
+
+attackPicker = widget.newPickerWheel(
+{
+    x = 0, 
+    y = (7 * _H) / 9,
+    columns = columnData,
+    style = "resizable",
+    width = _W,
+    rowHeight = ((2 * _H) / 9)/5,
+    fontSize = 20
+}) 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
@@ -49,8 +91,11 @@ function scene:create( event )
     sceneGroup:insert( infoArea  )
     sceneGroup:insert( menuArea  )
     
-
-
+    local function attackValueSelected (event)
+      selectedAttackValue = attackValues[event["row"]]
+      print(selectedAttackValue)
+    end 
+    
     -- Set up the picker wheel columns
     local columnData = 
     { 
@@ -59,11 +104,11 @@ function scene:create( event )
             width = _W / 2,
             labelPadding = 10,
             startIndex = 1,
-            labels = { "Shoot", "Pull Guard", "Foot Sweep" }
+            labels = attackValues
         }
     }
- 
-    local pickerWheel = widget.newPickerWheel(
+
+    attackPicker = widget.newPickerWheel(
     {
         x = 0, 
         y = (7 * _H) / 9,
@@ -71,16 +116,17 @@ function scene:create( event )
         style = "resizable",
         width = _W,
         rowHeight = ((2 * _H) / 9)/5,
-        fontSize = 20
-    })
-    sceneGroup:insert( pickerWheel  )
+        fontSize = 20,
+        onValueSelected = attackValueSelected
+    }) 
+
+    sceneGroup:insert( attackPicker  )
 
     local strongButton = widget.newButton(
         {
             label = "Strong",
-            onEvent = handleButtonEvent,
+            onEvent = handleStrongButton,
             emboss = false,
-            -- Properties for a rounded rectangle button
             shape = "circle",
             radius= 1/18 * _H,
             fillColor = { default={1,0.6,0,1}, over={1,0.1,0.7,0.4} },
@@ -95,9 +141,8 @@ function scene:create( event )
     local technicalButton = widget.newButton(
         {
             label = "Tech",
-            onEvent = handleButtonEvent,
+            onEvent = handleTechnicalButton,
             emboss = false,
-            -- Properties for a rounded rectangle button
             shape = "circle",
             radius= 1/18 * _H,
             fillColor = { default={0.7,0.8,0,1}, over={1,0.1,0.7,0.4} },
@@ -109,7 +154,8 @@ function scene:create( event )
     )
     sceneGroup:insert( technicalButton  )
     
-    actionText = display.newText("NOTHING YET", display.contentCenterX, display.contentHeight- 16)
+    actionText = display.newText("NOTHING YET", _W / 3, (2 * _H) / 6)
+    actionText:setFillColor( 1, 1, 1 )
     sceneGroup:insert( actionText )
 end
  
