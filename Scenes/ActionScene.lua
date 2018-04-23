@@ -13,15 +13,34 @@ local widget = require( "widget" )
 local _W = display.contentWidth
 local _H = display.contentHeight
 
-local selectedAttackValue = ''
-local currentPosition = ''
+local selectedAttackValue = "Shoot"
+local currentPosition = "Standing"
 
 local positionValues = {"Standing","Guard Top","Guard Bottom","Mount Top","Mount Bottom","Side Control Top","Side Control Bottom"}
 local attackValues = { "Shoot", "Pull Guard", "Foot Sweep" }
 
+local function determineAttackResult (attackStrentgh)
+  --either return true or false, or the name of resultant position
+  
+  --for now just rng against the input number ( or even just always return true)
+  return false 
+end
+
  -- Function to handle button events
 local function handleStrongButton( event )
     actionText.text = "Strong " .. selectedAttackValue
+    
+    --get the character's Strong attack strength for the given poisition
+    local strongAttackStrength = character["Standing"]
+    print(strongAttackStrength[1])
+    
+    --determine attack result for that attack (success or failure)
+    
+    --determine the next position that will appear on screen
+    
+    --assign any points awarded
+    
+    --begin animation for that next scene
     
     if ( "ended" == event.phase ) then
       
