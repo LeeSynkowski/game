@@ -1,8 +1,11 @@
 local composer = require( "composer" )
 
 local character = require("character")
+local attackTable = require("attackTable")
  
 local scene = composer.newScene()
+
+--local math = require("math")
  
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
@@ -23,7 +26,14 @@ local function determineAttackResult (attackStrentgh)
   --either return true or false, or the name of resultant position
   
   --for now just rng against the input number ( or even just always return true)
-  return false 
+  if math.random(1,10) * attackStrentgh > 15 then
+    print("Attack success")
+    return true --success
+  else 
+    print("Attack failure")
+    return false --failure
+  end
+  
 end
 
  -- Function to handle button events
@@ -32,11 +42,16 @@ local function handleStrongButton( event )
     
     --get the character's Strong attack strength for the given poisition
     local strongAttackStrength = character["Standing"]
-    print(strongAttackStrength[1])
     
     --determine attack result for that attack (success or failure)
+    if determineAttackResult(strongAttackStrength[1]) then 
+    --determine the next position that will appear on screen for success
+      print("Successfully going to " .. attackTable[selectedAttackValue][1])
     
-    --determine the next position that will appear on screen
+    --determine the next position that will appear on screen for failure
+    else
+      print("Failed going to " .. attackTable[selectedAttackValue][2]) 
+    end
     
     --assign any points awarded
     
