@@ -19,7 +19,7 @@ local _H = display.contentHeight
 local selectedAttackValue = "Shoot"
 local currentPosition = "Standing"
 
-local positionValues = {"Standing","Guard Top","Guard Bottom","Mount Top","Mount Bottom","Side Control Top","Side Control Bottom"}
+--local positionValues = {"Standing","Guard Top","Guard Bottom","Mount Top","Mount Bottom","Side Control Top","Side Control Bottom"}
 local attackValues = { "Shoot", "Pull Guard", "Foot Sweep" }
 
 local function determineAttackResult (attackStrentgh)
@@ -38,41 +38,64 @@ end
 
  -- Function to handle button events
 local function handleStrongButton( event )
-    mostRecentActionText.text = "Strong " .. selectedAttackValue
     
-    --get the character's Strong attack strength for the given poisition
-    local strongAttackStrength = character["Standing"]
-    
-    --determine attack result for that attack (success or failure)
-    if determineAttackResult(strongAttackStrength[1]) then 
-    --determine the next position that will appear on screen for success
-      print("Successfully going to " .. attackTable[selectedAttackValue][1])
-      currentPosition = attackTable[selectedAttackValue][1]
-      currentPositionText.text = currentPosition 
-    --determine the next position that will appear on screen for failure
-    else
-      print("Failed going to " .. attackTable[selectedAttackValue][2]) 
-      currentPosition = attackTable[selectedAttackValue][2]
-      currentPositionText.text = currentPosition 
+    if ( "began" == event.phase ) then
+      mostRecentActionText.text = "Strong " .. selectedAttackValue
+      
+      --get the character's Strong attack strength for the given poisition
+      local attackStrength = character[currentPosition]
+      
+      --determine attack result for that attack (success or failure)
+      if determineAttackResult(attackStrength[1][1]) then 
+      --determine the next position that will appear on screen for success
+        print("Successfully going to " .. attackTable[selectedAttackValue][1])
+        currentPosition = attackTable[selectedAttackValue][1]
+        currentPositionText.text = currentPosition 
+        resultOfLastAttackText.text = "Success"
+      --determine the next position that will appear on screen for failure
+      else
+        print("Failed going to " .. attackTable[selectedAttackValue][2]) 
+        currentPosition = attackTable[selectedAttackValue][2]
+        currentPositionText.text = currentPosition 
+        resultOfLastAttackText.text = "Failure"
+      end
+      
+      --assign any points awarded
+      
+      --begin animation for that next scene
+      print( "Strong was pressed" )
     end
     
-    --assign any points awarded
-    
-    --begin animation for that next scene
-    
-    if ( "ended" == event.phase ) then
-      
-      
-        print( "Strong was pressed and released" )
-    end
 end
 
  -- Function to handle button events
 local function handleTechnicalButton( event )
-    mostRecentActionText.text = "Technical  " .. selectedAttackValue
     
-    if ( "ended" == event.phase ) then
-        print( "Technical was pressed and released" )
+    if ( "began" == event.phase ) then
+            mostRecentActionText.text = "Technical " .. selectedAttackValue
+      
+      --get the character's Technical attack strength for the given poisition
+      local attackStrength = character[currentPosition]
+      
+      --determine attack result for that attack (success or failure)
+      if determineAttackResult(attackStrength[1][2]) then 
+      --determine the next position that will appear on screen for success
+        print("Successfully going to " .. attackTable[selectedAttackValue][1])
+        currentPosition = attackTable[selectedAttackValue][1]
+        currentPositionText.text = currentPosition 
+        resultOfLastAttackText.text = "Success"
+      --determine the next position that will appear on screen for failure
+      else
+        print("Failed going to " .. attackTable[selectedAttackValue][2]) 
+        currentPosition = attackTable[selectedAttackValue][2]
+        currentPositionText.text = currentPosition 
+        resultOfLastAttackText.text = "Failure"
+      end
+      
+      --assign any points awarded
+      
+      --begin animation for that next scene
+        print( "Technical was pressed" )
     end
 end
 
@@ -134,7 +157,7 @@ function scene:create( event )
     end 
     
     -- Set up the picker wheel columns
-    local columnData = 
+    columnData = 
     { 
         { 
             align = "right",
@@ -198,6 +221,10 @@ function scene:create( event )
     currentPositionText = display.newText("", _W / 2, (1 * _H) / 6)
     currentPositionText:setFillColor( 1, 1, 1 )
     sceneGroup:insert( currentPositionText )
+    
+    resultOfLastAttackText = display.newText("", _W / 2, (3 * _H) / 6)
+    resultOfLastAttackText:setFillColor( 1, 1, 1 )
+    sceneGroup:insert( resultOfLastAttackText )
     
     currentPositionText.text = currentPosition
     
