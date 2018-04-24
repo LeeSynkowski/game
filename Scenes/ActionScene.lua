@@ -38,7 +38,7 @@ end
 
  -- Function to handle button events
 local function handleStrongButton( event )
-    actionText.text = "Strong " .. selectedAttackValue
+    mostRecentActionText.text = "Strong " .. selectedAttackValue
     
     --get the character's Strong attack strength for the given poisition
     local strongAttackStrength = character["Standing"]
@@ -47,10 +47,13 @@ local function handleStrongButton( event )
     if determineAttackResult(strongAttackStrength[1]) then 
     --determine the next position that will appear on screen for success
       print("Successfully going to " .. attackTable[selectedAttackValue][1])
-    
+      currentPosition = attackTable[selectedAttackValue][1]
+      currentPositionText.text = currentPosition 
     --determine the next position that will appear on screen for failure
     else
       print("Failed going to " .. attackTable[selectedAttackValue][2]) 
+      currentPosition = attackTable[selectedAttackValue][2]
+      currentPositionText.text = currentPosition 
     end
     
     --assign any points awarded
@@ -66,14 +69,14 @@ end
 
  -- Function to handle button events
 local function handleTechnicalButton( event )
-    actionText.text = "Technical  " .. selectedAttackValue
+    mostRecentActionText.text = "Technical  " .. selectedAttackValue
     
     if ( "ended" == event.phase ) then
         print( "Technical was pressed and released" )
     end
 end
- 
-actionText = display.newText("",  _W/3, display.contentHeight)
+
+--mostRecentAction = display.newText("",  _W/3, display.contentHeight)
 
 local columnData = 
 { 
@@ -188,9 +191,23 @@ function scene:create( event )
     )
     sceneGroup:insert( technicalButton  )
     
-    actionText = display.newText("NOTHING YET", _W / 3, (2 * _H) / 6)
-    actionText:setFillColor( 1, 1, 1 )
-    sceneGroup:insert( actionText )
+    mostRecentActionText = display.newText("", _W / 2, (2 * _H) / 6)
+    mostRecentActionText:setFillColor( 1, 1, 1 )
+    sceneGroup:insert( mostRecentActionText )
+    
+    currentPositionText = display.newText("", _W / 2, (1 * _H) / 6)
+    currentPositionText:setFillColor( 1, 1, 1 )
+    sceneGroup:insert( currentPositionText )
+    
+    currentPositionText.text = currentPosition
+    
+    mostRecentActionLabel = display.newText("Most Recent Action: ", 0, (2 * _H) / 6)
+    currentPositionLabel = display.newText("Current Position: ", 0, (1 * _H) / 6)
+    resultOfLastAttackLabel = display.newText("Result of Last Attack: ", 0, (3 * _H) / 6)
+    
+    sceneGroup:insert( mostRecentActionLabel )
+    sceneGroup:insert( currentPositionLabel )
+    sceneGroup:insert( resultOfLastAttackLabel )
 end
  
  
