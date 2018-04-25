@@ -43,10 +43,10 @@ local function handleStrongButton( event )
       mostRecentActionText.text = "Strong " .. selectedAttackValue
       
       --get the character's Strong attack strength for the given poisition
-      local attackStrength = character[currentPosition]
+      local attackStrength = character[currentPosition][1][1]
       
       --determine attack result for that attack (success or failure)
-      if determineAttackResult(attackStrength[1][1]) then 
+      if determineAttackResult(attackStrength) then 
       --determine the next position that will appear on screen for success
         print("Successfully going to " .. attackTable[selectedAttackValue][1])
         currentPosition = attackTable[selectedAttackValue][1]
@@ -74,11 +74,11 @@ local function handleTechnicalButton( event )
     if ( "began" == event.phase ) then
             mostRecentActionText.text = "Technical " .. selectedAttackValue
       
-      --get the character's Technical attack strength for the given poisition
-      local attackStrength = character[currentPosition]
+      --get the character's Technical attack strength for the given position
+      local attackStrength = character[currentPosition][1][2]
       
       --determine attack result for that attack (success or failure)
-      if determineAttackResult(attackStrength[1][2]) then 
+      if determineAttackResult(attackStrength) then 
       --determine the next position that will appear on screen for success
         print("Successfully going to " .. attackTable[selectedAttackValue][1])
         currentPosition = attackTable[selectedAttackValue][1]
