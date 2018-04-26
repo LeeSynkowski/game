@@ -22,6 +22,33 @@ local currentPosition = "Standing"
 --local positionValues = {"Standing","Guard Top","Guard Bottom","Mount Top","Mount Bottom","Side Control Top","Side Control Bottom"}
 local attackValues = { "Shoot", "Pull Guard", "Foot Sweep" }
 
+function createAttackPicker( attackTable )
+  local columnData = 
+  { 
+      { 
+          align = "right",
+          width = _W / 2,
+          labelPadding = 10,
+          startIndex = 1,
+          labels = attackTable
+      }
+  }
+
+  return widget.newPickerWheel(
+  {
+      x = 0, 
+      y = (7 * _H) / 9,
+      columns = columnData,
+      style = "resizable",
+      width = _W,
+      rowHeight = ((2 * _H) / 9)/5,
+      fontSize = 20
+  })   
+
+end
+
+attackPicker = createAttackPicker( attackValues )
+
 local function determineAttackResult (attackStrentgh)
   --either return true or false, or the name of resultant position
   
@@ -45,18 +72,26 @@ local function handleStrongButton( event )
       --get the character's Strong attack strength for the given poisition
       local attackStrength = character[currentPosition][1][1]
       
-      --determine attack result for that attack (success or failure)
+      --determine attack result for that attack success
       if determineAttackResult(attackStrength) then 
       --determine the next position that will appear on screen for success
         print("Successfully going to " .. attackTable[selectedAttackValue][1])
         currentPosition = attackTable[selectedAttackValue][1]
         currentPositionText.text = currentPosition 
+        
+        createAttackPicker( character[currentPosition][2])
+        
         resultOfLastAttackText.text = "Success"
+        
+        
       --determine the next position that will appear on screen for failure
       else
         print("Failed going to " .. attackTable[selectedAttackValue][2]) 
         currentPosition = attackTable[selectedAttackValue][2]
         currentPositionText.text = currentPosition 
+        
+        createAttackPicker( character[currentPosition][2])
+        
         resultOfLastAttackText.text = "Failure"
       end
       
@@ -77,18 +112,21 @@ local function handleTechnicalButton( event )
       --get the character's Technical attack strength for the given position
       local attackStrength = character[currentPosition][1][2]
       
-      --determine attack result for that attack (success or failure)
+      --determine attack result for that attack success
       if determineAttackResult(attackStrength) then 
       --determine the next position that will appear on screen for success
         print("Successfully going to " .. attackTable[selectedAttackValue][1])
         currentPosition = attackTable[selectedAttackValue][1]
         currentPositionText.text = currentPosition 
+   
+        
         resultOfLastAttackText.text = "Success"
       --determine the next position that will appear on screen for failure
       else
         print("Failed going to " .. attackTable[selectedAttackValue][2]) 
         currentPosition = attackTable[selectedAttackValue][2]
         currentPositionText.text = currentPosition 
+
         resultOfLastAttackText.text = "Failure"
       end
       
@@ -101,27 +139,6 @@ end
 
 --mostRecentAction = display.newText("",  _W/3, display.contentHeight)
 
-local columnData = 
-{ 
-    { 
-        align = "right",
-        width = _W / 2,
-        labelPadding = 10,
-        startIndex = 1,
-        labels = { "Shoot", "Pull Guard", "Foot Sweep" }
-    }
-}
-
-attackPicker = widget.newPickerWheel(
-{
-    x = 0, 
-    y = (7 * _H) / 9,
-    columns = columnData,
-    style = "resizable",
-    width = _W,
-    rowHeight = ((2 * _H) / 9)/5,
-    fontSize = 20
-}) 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
