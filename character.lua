@@ -29,5 +29,6 @@ local character = {}
   character["Triangle Defense"] = {{4,7},{"Create Posture","Fight the Angle"}}
   character["Omopalata Offense"] = {{4,7},{"Pressure the Shoulder","Drag Hips Out"}}
   character["Omopalata Defense"] = {{4,7},{"Roll Through","Posture Up"}}
-  
+  character["Submission"] = {{0,0},{"",""}}
+  character["Tap"] = {{0,0},{"",""}}
 return character

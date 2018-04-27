@@ -18,6 +18,7 @@ local _H = display.contentHeight
 
 local selectedAttackValue = "Shoot"
 local currentPosition = "Standing"
+--mostRecentActionText = display.newText("", _W / 2, (2 * _H) / 6)
 
 --local positionValues = {"Standing","Guard Top","Guard Bottom","Mount Top","Mount Bottom","Side Control Top","Side Control Bottom"}
 local attackValues = { "Shoot", "Pull Guard", "Foot Sweep" }
@@ -47,7 +48,7 @@ function createAttackPicker( attackTable )
 
 end
 
-attackPicker = createAttackPicker( attackValues )
+attackPicker = createAttackPicker( character[currentPosition][2] )
 
 local function determineAttackResult (attackStrentgh)
   --either return true or false, or the name of resultant position
@@ -63,54 +64,39 @@ local function determineAttackResult (attackStrentgh)
   
 end
 
- -- Function to handle button events
 local function handleStrongButton( event )
-    
-    if ( "began" == event.phase ) then
-      mostRecentActionText.text = "Strong " .. selectedAttackValue
-      
-      --get the character's Strong attack strength for the given poisition
-      local attackStrength = character[currentPosition][1][1]
-      
-      --determine attack result for that attack success
-      if determineAttackResult(attackStrength) then 
-      --determine the next position that will appear on screen for success
-        print("Successfully going to " .. attackTable[selectedAttackValue][1])
-        currentPosition = attackTable[selectedAttackValue][1]
-        currentPositionText.text = currentPosition 
-        
-        createAttackPicker( character[currentPosition][2])
-        
-        resultOfLastAttackText.text = "Success"
-        
-        
-      --determine the next position that will appear on screen for failure
-      else
-        print("Failed going to " .. attackTable[selectedAttackValue][2]) 
-        currentPosition = attackTable[selectedAttackValue][2]
-        currentPositionText.text = currentPosition 
-        
-        createAttackPicker( character[currentPosition][2])
-        
-        resultOfLastAttackText.text = "Failure"
-      end
-      
-      --assign any points awarded
-      
-      --begin animation for that next scene
-      print( "Strong was pressed" )
-    end
-    
+    handleAttackButton( event,"Strong" )
+end
+
+local function handleTechnicalButton( event )
+    handleAttackButton( event,"Technical" )
 end
 
  -- Function to handle button events
-local function handleTechnicalButton( event )
+function handleAttackButton( event,attackType )
     
     if ( "began" == event.phase ) then
-            mostRecentActionText.text = "Technical " .. selectedAttackValue
       
-      --get the character's Technical attack strength for the given position
-      local attackStrength = character[currentPosition][1][2]
+      local values = attackPicker:getValues()
+ 
+--    Get the value for each column in the wheel, by column index
+      print("Attack picker values : ",values)
+      
+      selectedAttackValue = values[1].value
+      
+      print("attackType .. selectedAttackValue = " .. attackType .. selectedAttackValue)
+      mostRecentActionText.text = attackType .. selectedAttackValue
+      
+      --is it a technical or strong attack
+      local tableIndex
+      if attackType == "Strong" then
+        tableIndex = 1
+      else
+        tableIndex = 2
+      end
+      
+      --get the character's Attack strength for the given position and attack type
+      local attackStrength = character[currentPosition][1][tableIndex]
       
       --determine attack result for that attack success
       if determineAttackResult(attackStrength) then 
@@ -118,26 +104,25 @@ local function handleTechnicalButton( event )
         print("Successfully going to " .. attackTable[selectedAttackValue][1])
         currentPosition = attackTable[selectedAttackValue][1]
         currentPositionText.text = currentPosition 
-   
-        
+
         resultOfLastAttackText.text = "Success"
       --determine the next position that will appear on screen for failure
       else
         print("Failed going to " .. attackTable[selectedAttackValue][2]) 
         currentPosition = attackTable[selectedAttackValue][2]
         currentPositionText.text = currentPosition 
-
         resultOfLastAttackText.text = "Failure"
       end
+      
+      currentPositionText.text = currentPosition 
+      attackPicker = createAttackPicker( character[currentPosition][2])
       
       --assign any points awarded
       
       --begin animation for that next scene
-        print( "Technical was pressed" )
+        print( attackType .. " was pressed" )
     end
 end
-
---mostRecentAction = display.newText("",  _W/3, display.contentHeight)
 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions

@@ -16,6 +16,7 @@ local attackTable = {}
   attackTable["Leg Drag"] = {"Top Side Control","Top Guard"}
   attackTable["Double Underpass"] = {"Top Side Control","Top Guard"}
   attackTable["Underhook Pass"] = {"Top Side Control","Top Guard"}
+  attackTable["Sit Thru Pass"] = {"Top Side Control","Top Guard"}
   attackTable["Old School Sweep"] = {"Top Half Guard","Bottom Turtle"}
   attackTable["Deep Half Sweep"] = {"Top Guard","Bottom Half Guard"}
   attackTable["Triangle"] = {"Triangle Offense","Bottom Half Guard"}
@@ -61,6 +62,7 @@ local attackTable = {}
   attackTable["Drag Hips Out"] = {"Submission","Top Guard"}
   attackTable["Roll Through"] = {"Bottom Guard","Tap"}
   attackTable["Posture Up"] = {"Top Guard","Tap"}
+
 
 
 return attackTable
