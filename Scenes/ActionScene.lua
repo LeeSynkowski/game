@@ -5,7 +5,9 @@ local attackTable = require("attackTable")
  
 local scene = composer.newScene()
 
---local math = require("math")
+
+--For debugging only
+local successFailureTable = {"Success","Failure"}
  
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
@@ -56,10 +58,10 @@ local function determineAttackResult (attackStrentgh)
   --for now just rng against the input number ( or even just always return true)
   if math.random(1,10) * attackStrentgh > 15 then
     print("Attack success")
-    return true --success
+    return 1 --success
   else 
     print("Attack failure")
-    return false --failure
+    return 2 --failure
   end
   
 end
@@ -99,28 +101,25 @@ function handleAttackButton( event,attackType )
       local attackStrength = character[currentPosition][1][tableIndex]
       
       --determine attack result for that attack success
-      if determineAttackResult(attackStrength) then 
+      local attackResult =  determineAttackResult(attackStrength)
+    
       --determine the next position that will appear on screen for success
-        print("Successfully going to " .. attackTable[selectedAttackValue][1])
-        currentPosition = attackTable[selectedAttackValue][1]
-        currentPositionText.text = currentPosition 
-
-        resultOfLastAttackText.text = "Success"
-      --determine the next position that will appear on screen for failure
-      else
-        print("Failed going to " .. attackTable[selectedAttackValue][2]) 
-        currentPosition = attackTable[selectedAttackValue][2]
-        currentPositionText.text = currentPosition 
-        resultOfLastAttackText.text = "Failure"
-      end
-      
+      currentPosition = attackTable[selectedAttackValue][attackResult]
       currentPositionText.text = currentPosition 
+      
+      if currentPosition == "Submission" then
+        composer.gotoScene( "Scenes.SubmissionScene" )
+      end
+      --create new picker wheel with a list of current attacks
       attackPicker = createAttackPicker( character[currentPosition][2])
-      
-      --assign any points awarded
-      
-      --begin animation for that next scene
-        print( attackType .. " was pressed" )
+
+      --debug printing and temp display values
+      print(successFailureTable[attackResult] .." going to  " .. attackTable[selectedAttackValue][attackResult])
+      resultOfLastAttackText.text = successFailureTable[attackResult]
+      currentPositionText.text = currentPosition 
+      print( attackType .. " was pressed" )
+
+
     end
 end
 
