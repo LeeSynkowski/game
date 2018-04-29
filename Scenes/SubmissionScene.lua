@@ -2,6 +2,7 @@ local composer = require( "composer" )
  
 local scene = composer.newScene()
  
+local interSceneData = require("interSceneData") 
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
@@ -45,7 +46,16 @@ function scene:create( event )
     }
     )
     sceneGroup:insert( restartButton  )
- 
+    
+    scoreLabel = display.newText("Current Score: ", 0, (1 * _H) / 12)
+    sceneGroup:insert( scoreLabel )
+    
+    scoreText = display.newText("", _W / 2, (1 * _H) / 12)
+    scoreText:setFillColor( 1, 1, 1 )
+    sceneGroup:insert( scoreText )
+    
+    scoreText.text = interSceneData.score
+    
 end
  
  
