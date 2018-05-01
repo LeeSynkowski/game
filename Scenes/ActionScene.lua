@@ -1,6 +1,8 @@
 local composer = require( "composer" )
 
 local character = require("character")
+local opponent = require("opponent")
+
 attackTable = require("attackTable")
 
 local interSceneData = require("interSceneData")
