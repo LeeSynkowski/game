@@ -17,8 +17,7 @@ local successFailureTable = {"Success","Failure"}
 --Set Default Anchoring of Images to Top Left
 display.setDefault( "anchorX", 0)
 display.setDefault( "anchorY", 0) 
-    
-    
+
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
@@ -59,11 +58,6 @@ end
 
 attackPicker = createAttackPicker( character[currentPosition][2] )
 
-myAttackStatsLabel = display.newText("My Stats: ", 0, ((2 * _H) / 3) + ((_H / 18)))
-myAttackStats = display.newText("XXXX", _W/4, ((2 * _H) / 3) + ((_H / 18)))
-opponentAttackStatsLabel = display.newText("Op Stats: ", _W/2, (((2 * _H) / 3) + (_H/ 18)) )
-opponentAttackStats = display.newText("YYYY", 3*_W/4, (((2 * _H) / 3) + (_H/ 18)) ) 
-
 local function determineAttackResult (attackStrentgh,points)
   --either return true or false, or the name of resultant position
   
@@ -90,16 +84,11 @@ local function handleTechnicalButton( event )
 end
 
 local function updateAttackStatsForPosition(position)
-  
-myAttackStats = display.newText("", _W/4, ((2 * _H) / 3) + ((_H / 18)))
-opponentAttackStats = display.newText("", 3*_W/4, (((2 * _H) / 3) + (_H/ 18)) )   
-  
-myAttackStats = display.newText(table.concat(character[currentPosition][1], ", "), _W/4, ((2 * _H) / 3) + ((_H / 18)))
-opponentAttackStats = display.newText(table.concat(opponent[currentPosition][1], ", "), 3*_W/4, (((2 * _H) / 3) + (_H/ 18)) )   
-  
-end
 
-updateAttackStatsForPosition(currentPosition)
+    myAttackStats.text = table.concat(character[currentPosition][1], ", ")
+    opponentAttackStats.text = table.concat(opponent[currentPosition][1], ", ")
+      
+end
 
  -- Function to handle button events
 function handleAttackButton( event,attackType )
@@ -279,9 +268,22 @@ function scene:create( event )
       end
     end
 
-    -- run theo timer
+    -- run the timer
     local countDownTimer = timer.performWithDelay( 1000, updateTime, secondsLeft )
-  
+    
+    myAttackStatsLabel = display.newText("My Stats: ", 0, ((2 * _H) / 3) + ((_H / 18)))
+    opponentAttackStatsLabel = display.newText("Op Stats: ", _W/2, (((2 * _H) / 3) + (_H/ 18)) )
+        
+    myAttackStats = display.newText("", _W/4, ((2 * _H) / 3) + ((_H / 18)))
+    opponentAttackStats = display.newText("", 3*_W/4, (((2 * _H) / 3) + (_H/ 18)) ) 
+    
+    sceneGroup:insert( myAttackStatsLabel  )
+    sceneGroup:insert( myAttackStats  )    
+    sceneGroup:insert( opponentAttackStatsLabel )    
+    sceneGroup:insert( opponentAttackStats  )
+    
+    updateAttackStatsForPosition(currentPosition)
+
 end
 
 -- show()
