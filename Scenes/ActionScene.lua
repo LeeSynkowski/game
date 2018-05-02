@@ -14,6 +14,11 @@ local score = 0
 --For debugging only
 local successFailureTable = {"Success","Failure"}
  
+--Set Default Anchoring of Images to Top Left
+display.setDefault( "anchorX", 0)
+display.setDefault( "anchorY", 0) 
+    
+    
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via "composer.removeScene()"
@@ -54,6 +59,11 @@ end
 
 attackPicker = createAttackPicker( character[currentPosition][2] )
 
+myAttackStatsLabel = display.newText("My Stats: ", 0, ((2 * _H) / 3) + ((_H / 18)))
+myAttackStats = display.newText("XXXX", _W/4, ((2 * _H) / 3) + ((_H / 18)))
+opponentAttackStatsLabel = display.newText("Op Stats: ", _W/2, (((2 * _H) / 3) + (_H/ 18)) )
+opponentAttackStats = display.newText("YYYY", 3*_W/4, (((2 * _H) / 3) + (_H/ 18)) ) 
+
 local function determineAttackResult (attackStrentgh,points)
   --either return true or false, or the name of resultant position
   
@@ -78,6 +88,18 @@ end
 local function handleTechnicalButton( event )
     handleAttackButton( event,"Technical" )
 end
+
+local function updateAttackStatsForPosition(position)
+  
+myAttackStats = display.newText("", _W/4, ((2 * _H) / 3) + ((_H / 18)))
+opponentAttackStats = display.newText("", 3*_W/4, (((2 * _H) / 3) + (_H/ 18)) )   
+  
+myAttackStats = display.newText(table.concat(character[currentPosition][1], ", "), _W/4, ((2 * _H) / 3) + ((_H / 18)))
+opponentAttackStats = display.newText(table.concat(opponent[currentPosition][1], ", "), 3*_W/4, (((2 * _H) / 3) + (_H/ 18)) )   
+  
+end
+
+updateAttackStatsForPosition(currentPosition)
 
  -- Function to handle button events
 function handleAttackButton( event,attackType )
@@ -110,6 +132,10 @@ function handleAttackButton( event,attackType )
     
       --determine the next position that will appear on screen for success
       currentPosition = attackTable[selectedAttackValue][attackResult]
+      
+      --update stat info for current scene changes
+      updateAttackStatsForPosition(currentPosition)
+    
       currentPositionText.text = currentPosition 
       
       if currentPosition == "Submission" then
@@ -127,7 +153,6 @@ function handleAttackButton( event,attackType )
 
     end
 end
-
 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -224,7 +249,7 @@ function scene:create( event )
     resultOfLastAttackLabel = display.newText("Result of Last Attack: ", 0, (3 * _H) / 6)
     scoreLabel = display.newText("Current Score: ", 0, (1 * _H) / 12)
     
-    clockText = display.newText("1:00", 0, (1 * _H) / 24, native.systemFontBold, 20)
+    clockText = display.newText("01:33", 0, (1 * _H) / 24, native.systemFontBold, 20)
     clockText:setFillColor( 1, 1, 1 )
     
     sceneGroup:insert( mostRecentActionLabel )
@@ -234,7 +259,7 @@ function scene:create( event )
     sceneGroup:insert( clockText )
         
     -- Keep track of time in seconds
-    local secondsLeft = 1 * 10   -- 20 minutes * 60 seconds
+    local secondsLeft = 1 * 99   -- 20 minutes * 60 seconds
 
     local function updateTime()
       -- decrement the number of seconds
