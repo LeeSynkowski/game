@@ -1,3 +1,5 @@
+math.randomseed( os.time() )
+
 local composer = require( "composer" )
 
 local character = require("character")
@@ -58,10 +60,15 @@ end
 
 attackPicker = createAttackPicker( character[currentPosition][2] )
 
-local function determineAttackResult (attackStrentgh,points)
+local function handlePlayerAttack (attackStrentgh,points,position)
   --either return true or false, or the name of resultant position
   
   --for now just rng against the input number ( or even just always return true)
+  opponentsAttackStrength = opponent[position][1][math.random(1,2)]
+  
+  opponentsTiming = math.random(50,80)
+  myTiming = math.random(50,80)
+  
   if math.random(1,10) * attackStrentgh > 15 then
     print("Attack success")
     score = score + points
@@ -90,6 +97,14 @@ local function updateAttackStatsForPosition(position)
       
 end
 
+local function gameLoop(event)
+  --my looping actions go here
+  --if some condition then handleOpponentAttack
+end
+
+Runtime:addEventListener("enterFrame", gameLoop)
+
+
  -- Function to handle button events
 function handleAttackButton( event,attackType )
     
@@ -117,7 +132,7 @@ function handleAttackButton( event,attackType )
       local attackStrength = character[currentPosition][1][tableIndex]
       
       --determine attack result for that attack success
-      local attackResult =  determineAttackResult(attackStrength,attackTable[selectedAttackValue][3] )
+      local attackResult =  handlePlayerAttack(attackStrength,attackTable[selectedAttackValue][3],currentPosition )
     
       --determine the next position that will appear on screen for success
       currentPosition = attackTable[selectedAttackValue][attackResult]
