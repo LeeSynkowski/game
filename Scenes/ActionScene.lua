@@ -60,16 +60,17 @@ end
 
 attackPicker = createAttackPicker( character[currentPosition][2] )
 
-local function handlePlayerAttack (attackStrentgh,points,position)
-  --either return true or false, or the name of resultant position
-  
-  --for now just rng against the input number ( or even just always return true)
+local function handlePlayerAttack (attackStrength,points,position)
+
+  --opponent randomly chooses tech or strong at this point
   opponentsAttackStrength = opponent[position][1][math.random(1,2)]
   
+  --timing is a random number at this point
   opponentsTiming = math.random(50,80)
   myTiming = math.random(50,80)
   
-  if math.random(1,10) * attackStrentgh > 15 then
+  --opponentsAttack should be opponents defense
+  if myTiming * attackStrength >= opponentsAttackStrength * opponentsTiming then
     print("Attack success")
     score = score + points
     scoreText.text = score
