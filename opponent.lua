@@ -31,4 +31,10 @@ local opponent = {}
   opponent["Omopalata Defense"] = {{5,5},{"Roll Through","Posture Up"}}
   opponent["Submission"] = {{0,0},{"",""}}
   opponent["Tap"] = {{0,0},{"",""}}
+  opponent["Standing Defense"] = 5
+  opponent["Guard Passing Defense"] = 5
+  opponent["Guard Defense"] = 5
+  opponent["Top Defense"] = 5
+  opponent["Bottom Defense"] = 5
+  opponent["Submission Defense"] = 5
 return opponent

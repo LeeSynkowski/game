@@ -33,6 +33,8 @@ local selectedAttackValue = "Shoot"
 local currentPosition = "Standing"
 --mostRecentActionText = display.newText("", _W / 2, (2 * _H) / 6)
 
+timingLoopCounter = 0
+
 function createAttackPicker( attackTable )
   local columnData = 
   { 
@@ -60,17 +62,20 @@ end
 
 attackPicker = createAttackPicker( character[currentPosition][2] )
 
-local function handlePlayerAttack (attackStrength,points,position)
+local function getDefense(person)
+  --need a function to return the defense level for the person in a position, 
+  --this narrows it down from the possible positions to what it actually is
+  
+end
 
-  --opponent randomly chooses tech or strong at this point
-  opponentsAttackStrength = opponent[position][1][math.random(1,2)]
+local function handleAttack (attackStrength,points)
+
+  opponentsDefense = 25 --getDefense(opponent)
   
   --timing is a random number at this point
-  opponentsTiming = math.random(50,80)
   myTiming = math.random(50,80)
   
-  --opponentsAttack should be opponents defense
-  if myTiming * attackStrength >= opponentsAttackStrength * opponentsTiming then
+  if myTiming * attackStrength >= opponentsDefense then
     print("Attack success")
     score = score + points
     scoreText.text = score
@@ -98,9 +103,14 @@ local function updateAttackStatsForPosition(position)
       
 end
 
-local function gameLoop(event)
+function gameLoop(event)
   --my looping actions go here
   --if some condition then handleOpponentAttack
+  timingLoopCounter = timingLoopCounter + 1
+  
+  if math.fmod(timingLoopCounter,50) == 0 then
+    print("Inside gameloop event  " .. timingLoopCounter)
+  end
 end
 
 Runtime:addEventListener("enterFrame", gameLoop)
@@ -133,7 +143,7 @@ function handleAttackButton( event,attackType )
       local attackStrength = character[currentPosition][1][tableIndex]
       
       --determine attack result for that attack success
-      local attackResult =  handlePlayerAttack(attackStrength,attackTable[selectedAttackValue][3],currentPosition )
+      local attackResult =  handleAttack(attackStrength,attackTable[selectedAttackValue][3])
     
       --determine the next position that will appear on screen for success
       currentPosition = attackTable[selectedAttackValue][attackResult]
@@ -145,6 +155,7 @@ function handleAttackButton( event,attackType )
       
       if currentPosition == "Submission" then
         interSceneData.score = score
+        Runtime:removeEventListener("enterFrame", gameLoop)
         composer.gotoScene( "Scenes.SubmissionScene" )
       end
       --create new picker wheel with a list of current attacks

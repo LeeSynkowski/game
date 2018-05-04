@@ -31,4 +31,11 @@ local character = {}
   character["Omopalata Defense"] = {{5,1},{"Roll Through","Posture Up"}}
   character["Submission"] = {{0,0},{"",""}}
   character["Tap"] = {{0,0},{"",""}}
+  character["Standing Defense"] = 5
+  character["Guard Passing Defense"] = 5
+  character["Guard Defense"] = 5
+  character["Top Defense"] = 5
+  character["Bottom Defense"] = 5
+  character["Submission Defense"] = 5
+  
 return character
