@@ -62,20 +62,34 @@ end
 
 attackPicker = createAttackPicker( character[currentPosition][2] )
 
-local function getDefense(person)
-  --need a function to return the defense level for the person in a position, 
-  --this narrows it down from the possible positions to what it actually is
-  
+function getOpponentsDefense(position)
+  if (position == "Standing") then
+    return opponent["Standing Defense"] * 5--times multiplier
+    
+  elseif (position == "Top Turtle") or (position == "Top Guard") or (position == "Top Half Guard") then
+    return opponent["Guard Passing Defense"] 
+    
+  elseif (position == "Bottom Half Guard") or (position == "Bottom Guard") or (position == "Bottom Turtle")   then
+    return opponent["Guard Defense"] 
+    
+  elseif (position == "Bottom Half Guard") or (position == "Bottom Guard") or (position == "Bottom Turtle")   then
+    return opponent["Top Defense"]
+    
+  elseif  (position == "Bottom Half Guard") or (position == "Bottom Guard") or (position == "Bottom Turtle")  then
+    return opponent["Bottom Defense"] 
+    
+  elseif (position == "Bottom Half Guard") or (position == "Bottom Guard") or (position == "Bottom Turtle")   then
+    return opponent["Submission Defense"] 
+
+  end
 end
 
-local function handleAttack (attackStrength,points)
-
-  opponentsDefense = 25 --getDefense(opponent)
+local function determineAttackResult (attackStrength,points,defense)
   
   --timing is a random number at this point
   myTiming = math.random(50,80)
   
-  if myTiming * attackStrength >= opponentsDefense then
+  if myTiming * attackStrength >= defense then
     print("Attack success")
     score = score + points
     scoreText.text = score
@@ -89,11 +103,17 @@ local function handleAttack (attackStrength,points)
 end
 
 local function handleStrongButton( event )
-    handleAttackButton( event,"Strong" )
+  if ( "began" == event.phase ) then
+    local opponentsDefense = getOpponentsDefense(currentPosition)
+   handleAttack( "Strong", opponentsDefense )
+  end
 end
 
 local function handleTechnicalButton( event )
-    handleAttackButton( event,"Technical" )
+  if ( "began" == event.phase ) then
+        local opponentsDefense = getOpponentsDefense(currentPosition)
+   handleAttack( "Technical", opponentsDefense )
+  end
 end
 
 local function updateAttackStatsForPosition(position)
@@ -110,6 +130,8 @@ function gameLoop(event)
   
   if math.fmod(timingLoopCounter,50) == 0 then
     print("Inside gameloop event  " .. timingLoopCounter)
+    -- if some random chance
+    -- then perform an opponent attack
   end
 end
 
@@ -117,57 +139,54 @@ Runtime:addEventListener("enterFrame", gameLoop)
 
 
  -- Function to handle button events
-function handleAttackButton( event,attackType )
-    
-    if ( "began" == event.phase ) then
-      
-      local values = attackPicker:getValues()
- 
+function handleAttack( attackType,defense )
+
+    local values = attackPicker:getValues()
+
 --    Get the value for each column in the wheel, by column index
-      print("Attack picker values : ",values)
-      
-      selectedAttackValue = values[1].value
-      
-      print("attackType .. selectedAttackValue = " .. attackType .. selectedAttackValue)
-      mostRecentActionText.text = attackType .. selectedAttackValue
-      
-      --is it a technical or strong attack
-      local tableIndex
-      if attackType == "Strong" then
-        tableIndex = 1
-      else
-        tableIndex = 2
-      end
-      
-      --get the character's Attack strength for the given position and attack type
-      local attackStrength = character[currentPosition][1][tableIndex]
-      
-      --determine attack result for that attack success
-      local attackResult =  handleAttack(attackStrength,attackTable[selectedAttackValue][3])
+    print("Attack picker values : ",values)
     
-      --determine the next position that will appear on screen for success
-      currentPosition = attackTable[selectedAttackValue][attackResult]
-      
-      --update stat info for current scene changes
-      updateAttackStatsForPosition(currentPosition)
+    selectedAttackValue = values[1].value
     
-      currentPositionText.text = currentPosition 
-      
-      if currentPosition == "Submission" then
-        interSceneData.score = score
-        Runtime:removeEventListener("enterFrame", gameLoop)
-        composer.gotoScene( "Scenes.SubmissionScene" )
-      end
-      --create new picker wheel with a list of current attacks
-      attackPicker = createAttackPicker( character[currentPosition][2])
-
-      --debug printing and temp display values
-      print(successFailureTable[attackResult] .." going to  " .. attackTable[selectedAttackValue][attackResult])
-      resultOfLastAttackText.text = successFailureTable[attackResult]
-      currentPositionText.text = currentPosition 
-      print( attackType .. " was pressed" )
-
+    print("attackType .. selectedAttackValue = " .. attackType .. selectedAttackValue)
+    mostRecentActionText.text = attackType .. selectedAttackValue
+    
+    --is it a technical or strong attack
+    local tableIndex
+    if attackType == "Strong" then
+      tableIndex = 1
+    else
+      tableIndex = 2
     end
+    
+    --get the character's Attack strength for the given position and attack type
+    local attackStrength = character[currentPosition][1][tableIndex]
+    
+    --determine attack result for that attack success
+    local attackResult =  determineAttackResult(attackStrength,attackTable[selectedAttackValue][3],defense)
+  
+    --determine the next position that will appear on screen for success
+    currentPosition = attackTable[selectedAttackValue][attackResult]
+    
+    --update stat info for current scene changes
+    updateAttackStatsForPosition(currentPosition)
+  
+    currentPositionText.text = currentPosition 
+    
+    if currentPosition == "Submission" then
+      interSceneData.score = score
+      Runtime:removeEventListener("enterFrame", gameLoop)
+      composer.gotoScene( "Scenes.SubmissionScene" )
+    end
+    --create new picker wheel with a list of current attacks
+    attackPicker = createAttackPicker( character[currentPosition][2])
+
+    --debug printing and temp display values
+    print(successFailureTable[attackResult] .." going to  " .. attackTable[selectedAttackValue][attackResult])
+    resultOfLastAttackText.text = successFailureTable[attackResult]
+    currentPositionText.text = currentPosition 
+    print( attackType .. " was pressed" )
+
 end
 
 -- -----------------------------------------------------------------------------------
