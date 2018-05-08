@@ -63,24 +63,31 @@ end
 attackPicker = createAttackPicker( character[currentPosition][2] )
 
 function getOpponentsDefense(position)
+  --standing
   if (position == "Standing") then
     return opponent["Standing Defense"] * 5--times multiplier
-    
+   
+  --top guard 
   elseif (position == "Top Turtle") or (position == "Top Guard") or (position == "Top Half Guard") then
     return opponent["Guard Passing Defense"] 
-    
+  
+  --bottom guard
   elseif (position == "Bottom Half Guard") or (position == "Bottom Guard") or (position == "Bottom Turtle")   then
     return opponent["Guard Defense"] 
-    
-  elseif (position == "Bottom Half Guard") or (position == "Bottom Guard") or (position == "Bottom Turtle")   then
+  
+  --top control
+  elseif (position == "Top Rear Mount") or (position == "Top Mount") or (position == "Top Side Control")   then
     return opponent["Top Defense"]
-    
-  elseif  (position == "Bottom Half Guard") or (position == "Bottom Guard") or (position == "Bottom Turtle")  then
+  
+  --bottom position
+  elseif  (position == "Bottom Side Control") or (position == "Bottom Mount") or (position == "Bottom Rear Mount")  then
     return opponent["Bottom Defense"] 
-    
-  elseif (position == "Bottom Half Guard") or (position == "Bottom Guard") or (position == "Bottom Turtle")   then
+  
+  --in a submission
+  elseif (position == "Rear Naked Choke Defense") or (position == "Armbar Defense") or (position == "Collar Choke Defense") or (position == "Kimura Defense") or (position == "Americana Defense") or (position == "Anaconda Choke Defense") or (position == "Triangle Defense") or (position == "Omopalata Defense") then
     return opponent["Submission Defense"] 
-
+  else
+    return 1
   end
 end
 
