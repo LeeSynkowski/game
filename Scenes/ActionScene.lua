@@ -112,14 +112,14 @@ end
 local function handleStrongButton( event )
   if ( "began" == event.phase ) then
     local opponentsDefense = getOpponentsDefense(currentPosition)
-   handleAttack( "Strong", opponentsDefense )
+    handlePlayerAttack( "Strong", opponentsDefense )
   end
 end
 
 local function handleTechnicalButton( event )
   if ( "began" == event.phase ) then
-        local opponentsDefense = getOpponentsDefense(currentPosition)
-   handleAttack( "Technical", opponentsDefense )
+    local opponentsDefense = getOpponentsDefense(currentPosition)
+    handlePlayerAttack( "Technical", opponentsDefense )
   end
 end
 
@@ -130,6 +130,64 @@ local function updateAttackStatsForPosition(position)
       
 end
 
+ -- Function to handle an opponents attack
+ -- this differs from the handle player attack because we figure out what is needed from inside the function, instead of it being inputted it
+function handleOpponentAttack( defense )
+
+    --1) Figure out what attack option is picked (using random selection at this point)
+    --local values = attackPicker:getValues()
+    local values = opponent[currentPosition][2]
+    
+    --need to add the number of options in the opponent table because it is a pain to count the size of a lua table
+    local numberOfOptions = opponent[currentPosition][3]
+    
+    --Get the value for each column in the wheel, by column index
+    print("Opponent attack values : ",values)
+    
+    selectedAttackValue = values[1][math.random(1,numberOfOptions)]
+    
+    print("Opponent attackType .. selectedAttackValue = " .. attackType .. selectedAttackValue)
+    mostRecentActionText.text = "Opp  " .. attackType .. selectedAttackValue
+    
+    --2) Determine if it is a Technical or Strong Attack
+    local tableIndex = math.random(1,2)
+    
+    --3) Find attack strength for the character
+    --get the character's Attack strength for the given position and attack type
+    local attackStrength = opponent[currentPosition][1][tableIndex]
+    
+    --4) Find the attack result
+    --determine attack result for that attack success
+    --right now this uses generic random timing, which we may need to change
+    local attackResult =  determineAttackResult(attackStrength,attackTable[selectedAttackValue][3],defense)
+  
+    --5) Determine the next position
+    --determine the next position that will appear on screen for success
+    currentPosition = attackTable[selectedAttackValue][attackResult]
+    
+    --6) Update display to reflect the new position
+    --update stat info for current scene changes
+    updateAttackStatsForPosition(currentPosition)
+    currentPositionText.text = currentPosition 
+    
+    if currentPosition == "Submission" then
+      interSceneData.score = score
+      Runtime:removeEventListener("enterFrame", gameLoop)
+      composer.gotoScene( "Scenes.SubmissionScene" )
+    end
+    --create new picker wheel with a list of current attacks
+    attackPicker = createAttackPicker( character[currentPosition][2])
+
+    --debug printing and temp display values
+    print(successFailureTable[attackResult] .." going to  " .. attackTable[selectedAttackValue][attackResult])
+    resultOfLastAttackText.text = successFailureTable[attackResult]
+    currentPositionText.text = currentPosition 
+    print( attackType .. " was pressed" )
+
+end
+
+
+
 function gameLoop(event)
   --my looping actions go here
   --if some condition then handleOpponentAttack
@@ -139,25 +197,26 @@ function gameLoop(event)
     print("Inside gameloop event  " .. timingLoopCounter)
     -- if some random chance
     -- then perform an opponent attack
+    defense = 5 --need to create getPlayersDefense(currentPosition)
+    handleOpponentAttack( defense )
   end
 end
 
 Runtime:addEventListener("enterFrame", gameLoop)
 
 
- -- Function to handle button events
-function handleAttack( attackType,defense )
+ -- Function to handle a player attack
+function handlePlayerAttack( attackType,defense )
 
+    --1) Figure out what attack option is picked
     local values = attackPicker:getValues()
 
---    Get the value for each column in the wheel, by column index
-    print("Attack picker values : ",values)
-    
     selectedAttackValue = values[1].value
     
     print("attackType .. selectedAttackValue = " .. attackType .. selectedAttackValue)
     mostRecentActionText.text = attackType .. selectedAttackValue
     
+    --2) Determine if it is a Technical or Strong Attack
     --is it a technical or strong attack
     local tableIndex
     if attackType == "Strong" then
@@ -166,18 +225,21 @@ function handleAttack( attackType,defense )
       tableIndex = 2
     end
     
+    --3) Find attack strength for the character
     --get the character's Attack strength for the given position and attack type
     local attackStrength = character[currentPosition][1][tableIndex]
     
+    --4) Find the attack result
     --determine attack result for that attack success
     local attackResult =  determineAttackResult(attackStrength,attackTable[selectedAttackValue][3],defense)
   
+    --5) Determine the next position
     --determine the next position that will appear on screen for success
     currentPosition = attackTable[selectedAttackValue][attackResult]
     
+    --6) Update display to reflect the new position
     --update stat info for current scene changes
     updateAttackStatsForPosition(currentPosition)
-  
     currentPositionText.text = currentPosition 
     
     if currentPosition == "Submission" then
