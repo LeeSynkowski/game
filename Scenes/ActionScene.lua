@@ -11,7 +11,8 @@ local interSceneData = require("interSceneData")
  
 local scene = composer.newScene()
 
-local score = 0
+local playerScore = 0
+local opponentScore = 0
 
 --For debugging only
 local successFailureTable = {"Success","Failure"}
@@ -93,16 +94,13 @@ function getOpponentsDefense(position)
   end
 end
 
-local function determineAttackResult (attackStrength,points,defense)
+local function determineAttackResult (attackStrength,defense,timing)
   
-  --timing is a random number at this point
-  myTiming = math.random(50,80)
-  
-  if myTiming * attackStrength >= defense then
+  if timing * attackStrength >= defense then
     print("Attack success")
-    score = score + points
-    scoreText.text = score
-    print("Current score: " .. score)
+ --   score = score + points
+ --   scoreText.text = score
+ --   print("Current score: " .. score)
     return 1 --success
   else 
     print("Attack failure")
@@ -167,7 +165,17 @@ function handleOpponentAttack( defense )
       local x  = 1
     end
     
-    local attackResult =  determineAttackResult(attackStrength,attackTable[selectedAttackValue][3],defense)
+    --opponent timing is random
+    local timing = math.random(50,80)
+    
+    local attackResult =  determineAttackResult(attackStrength,defense,timing)
+    
+    if (attackResult == 1) then
+      opponentScore = opponentScore + attackTable[selectedAttackValue][3]
+      scoreText.text = "Plyr: " .. playerScore .. " Opp: " .. opponentScore
+    end
+  
+    
   
     --5) Determine the next position
     --determine the next position that will appear on screen for success
@@ -179,7 +187,7 @@ function handleOpponentAttack( defense )
     currentPositionText.text = currentPosition 
     
     if currentPosition == "Submission" then
-      interSceneData.score = score
+      interSceneData.score = playerScore
       Runtime:removeEventListener("enterFrame", gameLoop)
       composer.gotoScene( "Scenes.SubmissionScene" )
     end
@@ -202,7 +210,7 @@ function gameLoop(event)
   --if some condition then handleOpponentAttack
   timingLoopCounter = timingLoopCounter + 1
   
-  if (math.fmod(timingLoopCounter,20) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") and (attackHappening == false) then
+  if (math.fmod(timingLoopCounter,60) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") and (attackHappening == false) then
     print(" math.fmod(timingLoopCounter,99)  " .. math.fmod(timingLoopCounter,99) )
     print("Inside gameloop event  " .. timingLoopCounter)
     -- if some random chance
@@ -239,9 +247,18 @@ function handlePlayerAttack( attackType,defense )
     --get the character's Attack strength for the given position and attack type
     local attackStrength = character[currentPosition][1][tableIndex]
     
+    --player timing is random for now will need a get timing method
+    local timing = math.random(50,80)
+    
     --4) Find the attack result
     --determine attack result for that attack success
-    local attackResult =  determineAttackResult(attackStrength,attackTable[selectedAttackValue][3],defense)
+    local attackResult =  determineAttackResult(attackStrength,defense,timing)
+    
+    if (attackResult == 1) then
+        playerScore = playerScore + attackTable[selectedAttackValue][3]
+        scoreText.text = "Plyr: " .. playerScore .. " Opp: " .. opponentScore
+    end
+    
   
     --5) Determine the next position
     --determine the next position that will appear on screen for success
@@ -253,7 +270,7 @@ function handlePlayerAttack( attackType,defense )
     currentPositionText.text = currentPosition 
     
     if currentPosition == "Submission" then
-      interSceneData.score = score
+      interSceneData.score = playerScore
       Runtime:removeEventListener("enterFrame", gameLoop)
       composer.gotoScene( "Scenes.SubmissionScene" )
     end
@@ -356,7 +373,7 @@ function scene:create( event )
     scoreText:setFillColor( 1, 1, 1 )
     sceneGroup:insert( scoreText )
     
-    scoreText.text = score
+    scoreText.text = "Plyr: " .. playerScore .. " Opp: " .. opponentScore
     
     mostRecentActionLabel = display.newText("Most Recent Action: ", 0, (2 * _H) / 6)
     currentPositionLabel = display.newText("Current Position: ", 0, (1 * _H) / 6)
@@ -388,7 +405,7 @@ function scene:create( event )
       clockText.text = timeDisplay
       
       if secondsLeft == 0 then
-        interSceneData.score = score
+        interSceneData.score = playerScore
         composer.gotoScene( "Scenes.SubmissionScene" )
       end
     end
