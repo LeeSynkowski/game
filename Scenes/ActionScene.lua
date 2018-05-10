@@ -30,7 +30,7 @@ local _W = display.contentWidth
 local _H = display.contentHeight
 
 local selectedAttackValue = "Shoot"
-local currentPosition = "Standing"
+currentPosition = "Standing"
 --mostRecentActionText = display.newText("", _W / 2, (2 * _H) / 6)
 
 local timingLoopCounter = 0
@@ -163,6 +163,10 @@ function handleOpponentAttack( defense )
     --4) Find the attack result
     --determine attack result for that attack success
     --right now this uses generic random timing, which we may need to change
+    if (currentPosition == "Submission") then
+      local x  = 1
+    end
+    
     local attackResult =  determineAttackResult(attackStrength,attackTable[selectedAttackValue][3],defense)
   
     --5) Determine the next position
@@ -198,7 +202,8 @@ function gameLoop(event)
   --if some condition then handleOpponentAttack
   timingLoopCounter = timingLoopCounter + 1
   
-  if (math.fmod(timingLoopCounter,99) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") or (attackHappening == false) then
+  if (math.fmod(timingLoopCounter,20) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") and (attackHappening == false) then
+    print(" math.fmod(timingLoopCounter,99)  " .. math.fmod(timingLoopCounter,99) )
     print("Inside gameloop event  " .. timingLoopCounter)
     -- if some random chance
     -- then perform an opponent attack
