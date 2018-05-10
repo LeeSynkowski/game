@@ -33,7 +33,9 @@ local selectedAttackValue = "Shoot"
 local currentPosition = "Standing"
 --mostRecentActionText = display.newText("", _W / 2, (2 * _H) / 6)
 
-timingLoopCounter = 0
+local timingLoopCounter = 0
+
+local attackHappening = false
 
 function createAttackPicker( attackTable )
   local columnData = 
@@ -134,6 +136,8 @@ end
  -- this differs from the handle player attack because we figure out what is needed from inside the function, instead of it being inputted it
 function handleOpponentAttack( defense )
 
+    attackHappening = true
+    
     --1) Figure out what attack option is picked (using random selection at this point)
     --local values = attackPicker:getValues()
     local values = opponent[currentPosition][2]
@@ -142,15 +146,15 @@ function handleOpponentAttack( defense )
     local numberOfOptions = opponent[currentPosition][3]
     
     --Get the value for each column in the wheel, by column index
-    print("Opponent attack values : ",values)
-    
-    selectedAttackValue = values[1][math.random(1,numberOfOptions)]
-    
-    print("Opponent attackType .. selectedAttackValue = " .. attackType .. selectedAttackValue)
-    mostRecentActionText.text = "Opp  " .. attackType .. selectedAttackValue
+    print("Opponent attack values : ", values)
+
+    selectedAttackValue = values[math.random(1,numberOfOptions)]
     
     --2) Determine if it is a Technical or Strong Attack
-    local tableIndex = math.random(1,2)
+    local tableIndex = math.random(1,2)    
+    
+    print("Opponent attackType .. selectedAttackValue = " .. tableIndex .. selectedAttackValue)
+    mostRecentActionText.text = "Opp  " .. tableIndex .. selectedAttackValue
     
     --3) Find attack strength for the character
     --get the character's Attack strength for the given position and attack type
@@ -182,8 +186,9 @@ function handleOpponentAttack( defense )
     print(successFailureTable[attackResult] .." going to  " .. attackTable[selectedAttackValue][attackResult])
     resultOfLastAttackText.text = successFailureTable[attackResult]
     currentPositionText.text = currentPosition 
-    print( attackType .. " was pressed" )
+    print( tableIndex .. " was pressed" )
 
+    attackHappening = false
 end
 
 
@@ -193,7 +198,7 @@ function gameLoop(event)
   --if some condition then handleOpponentAttack
   timingLoopCounter = timingLoopCounter + 1
   
-  if math.fmod(timingLoopCounter,50) == 0 then
+  if (math.fmod(timingLoopCounter,99) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") or (attackHappening == false) then
     print("Inside gameloop event  " .. timingLoopCounter)
     -- if some random chance
     -- then perform an opponent attack

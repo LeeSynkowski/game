@@ -6,7 +6,7 @@
 -- Start Debugging
 --require('mobdebug').start()
 
---require('mobdebug').start()
+require('mobdebug').start()
 
 local composer = require( "composer" )
 
