@@ -127,6 +127,10 @@ local function handleTechnicalButton( event )
   end
 end
 
+local function handleDefendButton(event)
+  
+end
+
 local function updateAttackStatsForPosition(position)
 
     myAttackStats.text = table.concat(character[currentPosition][1], ", ")
@@ -361,11 +365,28 @@ function scene:create( event )
             fillColor = { default={0.7,0.8,0,1}, over={1,0.1,0.7,0.4} },
             strokeColor = { default={1,0.4,0,1}, over={0.8,0.8,1,1} },
             strokeWidth = 4,
-            top = _H - (_H/9) +  - 1/36 * _H,
+            top = _H - (_H/9) - 1/144 * _H,
             left = (3 * _W)/4 + 1/72 * _H -- * _H
         }
     )
     sceneGroup:insert( technicalButton  )
+    
+    local defenseButton = widget.newButton(
+        {
+            label = "Defend",
+            onEvent = handleDefendButton,
+            emboss = false,
+            shape = "circle",
+            radius= 1/36 * _H,
+            fillColor = { default={0.7,0.8,0,1}, over={1,0.1,0.7,0.4} },
+            strokeColor = { default={1,0.4,0,1}, over={0.8,0.8,1,1} },
+            strokeWidth = 4,
+            top = (7 * _H) / 9 + 1/36 * _H,
+            left = _W - (5/36 * _H)
+        }
+    )
+    sceneGroup:insert( defenseButton  )
+    
     
     mostRecentActionText = display.newText("", _W / 2, (2 * _H) / 6)
     mostRecentActionText:setFillColor( 1, 1, 1 )
