@@ -1,13 +1,15 @@
 math.randomseed( os.time() )
 
 local composer = require( "composer" )
+composer.removeScene("Scenes.SubmissionScene")
 
 local character = require("character")
 local opponent = require("opponent")
 
-attackTable = require("attackTable")
+local attackTable = require("attackTable")
 
 local interSceneData = require("interSceneData")
+local opponentPositionConverter = require("opponentPositionConverter")
  
 local scene = composer.newScene()
 
@@ -31,6 +33,8 @@ local _W = display.contentWidth
 local _H = display.contentHeight
 
 local selectedAttackValue = "Shoot"
+
+--currentPosition is always from the Player's perspective
 currentPosition = "Standing"
 --mostRecentActionText = display.newText("", _W / 2, (2 * _H) / 6)
 
@@ -126,7 +130,7 @@ end
 local function updateAttackStatsForPosition(position)
 
     myAttackStats.text = table.concat(character[currentPosition][1], ", ")
-    opponentAttackStats.text = table.concat(opponent[currentPosition][1], ", ")
+    opponentAttackStats.text = table.concat(opponent[opponentPositionConverter[currentPosition]][1], ", ")
       
 end
 
@@ -138,10 +142,12 @@ function handleOpponentAttack( defense )
     
     --1) Figure out what attack option is picked (using random selection at this point)
     --local values = attackPicker:getValues()
-    local values = opponent[currentPosition][2]
+    
+    --opponentPositionConverter[currentPosition]
+    local values = opponent[opponentPositionConverter[currentPosition]][2]
     
     --need to add the number of options in the opponent table because it is a pain to count the size of a lua table
-    local numberOfOptions = opponent[currentPosition][3]
+    local numberOfOptions = opponent[opponentPositionConverter[currentPosition]][3]
     
     --Get the value for each column in the wheel, by column index
     print("Opponent attack values : ", values)
@@ -156,7 +162,7 @@ function handleOpponentAttack( defense )
     
     --3) Find attack strength for the character
     --get the character's Attack strength for the given position and attack type
-    local attackStrength = opponent[currentPosition][1][tableIndex]
+    local attackStrength = opponent[opponentPositionConverter[currentPosition]][1][tableIndex]
     
     --4) Find the attack result
     --determine attack result for that attack success
@@ -179,18 +185,21 @@ function handleOpponentAttack( defense )
   
     --5) Determine the next position
     --determine the next position that will appear on screen for success
-    currentPosition = attackTable[selectedAttackValue][attackResult]
+    currentPosition = opponentPositionConverter[attackTable[selectedAttackValue][attackResult]]
     
     --6) Update display to reflect the new position
     --update stat info for current scene changes
     updateAttackStatsForPosition(currentPosition)
     currentPositionText.text = currentPosition 
     
-    if currentPosition == "Submission" then
-      interSceneData.score = playerScore
+    if (currentPosition == "Submission") or (currentPosition == "Tap") then
+      interSceneData.playerScore = playerScore
+      interSceneData.opponentScore = opponentScore
+      interSceneData.position = currentPosition
       Runtime:removeEventListener("enterFrame", gameLoop)
       composer.gotoScene( "Scenes.SubmissionScene" )
     end
+    
     --create new picker wheel with a list of current attacks
     attackPicker = createAttackPicker( character[currentPosition][2])
 
@@ -269,11 +278,14 @@ function handlePlayerAttack( attackType,defense )
     updateAttackStatsForPosition(currentPosition)
     currentPositionText.text = currentPosition 
     
-    if currentPosition == "Submission" then
-      interSceneData.score = playerScore
+    if (currentPosition == "Submission") or (currentPosition == "Tap") then
+      interSceneData.playerScore = playerScore
+      interSceneData.opponentScore = opponentScore
+      interSceneData.position = currentPosition
       Runtime:removeEventListener("enterFrame", gameLoop)
       composer.gotoScene( "Scenes.SubmissionScene" )
     end
+    
     --create new picker wheel with a list of current attacks
     attackPicker = createAttackPicker( character[currentPosition][2])
 

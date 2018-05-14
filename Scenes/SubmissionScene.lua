@@ -25,11 +25,20 @@ end
 function scene:create( event )
  
     local sceneGroup = self.view
-    
-    
-    youWinText = display.newText("YOU WIN!", _W / 2, (3 * _H) / 6)
+  
+    matchOutcomeText = display.newText("", _W / 2, (3 * _H) / 6)
     resultOfLastAttackText:setFillColor( 1, 1, 1 )
-    sceneGroup:insert( youWinText )
+    sceneGroup:insert( matchOutcomeText )
+    
+    if (interSceneData.position == "Submission") or (interSceneData.playerScore > interSceneData.opponentScore ) then
+      matchOutcomeText.text = "You win!"
+    elseif (interSceneData.position == "Tap") or (interSceneData.playerScore < interSceneData.opponentScore ) then
+      matchOutcomeText.text = "You lose."
+    elseif (interSceneData.playerScore == interSceneData.opponentScore ) then
+      matchOutcomeText.text = "Tie."
+    else
+      matchOutcomeText.text = "Error."
+    end
     
     local restartButton = widget.newButton(
     {
@@ -54,7 +63,7 @@ function scene:create( event )
     scoreText:setFillColor( 1, 1, 1 )
     sceneGroup:insert( scoreText )
     
-    scoreText.text = interSceneData.score
+    scoreText.text = "Plyr: " .. interSceneData.playerScore .. " Opp: " .. interSceneData.opponentScore
     
 end
  
