@@ -69,6 +69,18 @@ end
 
 attackPicker = createAttackPicker( character[currentPosition][2] )
 
+timingCircleMaxRadius = _H/18
+
+technicalTimingCircleCurrentRadius = timingCircleMaxRadius 
+strongTimingCircleCurrentRadius = timingCircleMaxRadius 
+circleMode = "Decreasing"
+
+technicalTimingCircle = display.newCircle( (3* _W)/4 - _H/18,(2 * _H)/3,technicalTimingCircleCurrentRadius )
+technicalTimingCircle:setFillColor(0,.6,.6)
+
+strongTimingCircle = display.newCircle( _W/4 - _H/18,(2 * _H)/3,strongTimingCircleCurrentRadius )
+strongTimingCircle:setFillColor(1,1,0)
+
 function getOpponentsDefense(position)
   --standing
   if (position == "Standing") then
@@ -216,20 +228,38 @@ function handleOpponentAttack( defense )
     attackHappening = false
 end
 
-
+local function updateCircles()
+  
+  local sceneGroup = self.view
+  
+  if circleMode == "Decreasing" then
+    technicalTimingCircleCurrentRadius = technicalTimingCircleCurrentRadius - 1
+    if technicalTimingCircleCurrentRadius > 0 then
+      
+      sceneGroup:remove(technicalTimingCircle)
+      technicalTimingCircle = display.newCircle( (3* _W)/4 - _H/18,(2 * _H)/3,technicalTimingCircleCurrentRadius )
+      technicalTimingCircle:setFillColor(0,.6,.6)
+      sceneGroup:insert(technicalTimingCircle)
+      
+    else
+      circleMode = "Increasing"
+    end
+  end
+end
 
 function gameLoop(event)
   --my looping actions go here
   --if some condition then handleOpponentAttack
   timingLoopCounter = timingLoopCounter + 1
   
-  if (math.fmod(timingLoopCounter,60) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") and (attackHappening == false) then
+  if (math.fmod(timingLoopCounter,10) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") and (attackHappening == false) then
     print(" math.fmod(timingLoopCounter,99)  " .. math.fmod(timingLoopCounter,99) )
     print("Inside gameloop event  " .. timingLoopCounter)
     -- if some random chance
     -- then perform an opponent attack
     defense = 5 --need to create getPlayersDefense(currentPosition)
-    handleOpponentAttack( defense )
+    --handleOpponentAttack( defense )
+    updateCircles()
   end
 end
 
@@ -458,6 +488,10 @@ function scene:create( event )
     sceneGroup:insert( opponentAttackStats  )
     
     updateAttackStatsForPosition(currentPosition)
+    
+    sceneGroup:insert(strongTimingCircle)
+    
+    sceneGroup:insert(technicalTimingCircle)
 
 end
 
