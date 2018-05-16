@@ -42,6 +42,8 @@ local timingLoopCounter = 0
 
 local attackHappening = false
 
+local circleSceneGroup = nil
+
 function createAttackPicker( attackTable )
   local columnData = 
   { 
@@ -69,17 +71,20 @@ end
 
 attackPicker = createAttackPicker( character[currentPosition][2] )
 
-timingCircleMaxRadius = _H/18
+circleMaxRadius = _H/18
 
-technicalTimingCircleCurrentRadius = timingCircleMaxRadius 
-strongTimingCircleCurrentRadius = timingCircleMaxRadius 
-circleMode = "Decreasing"
+technicalTimingCircleCurrentRadius = circleMaxRadius 
+strongTimingCircleCurrentRadius = circleMaxRadius 
 
-technicalTimingCircle = display.newCircle( (3* _W)/4 - _H/18,(2 * _H)/3,technicalTimingCircleCurrentRadius )
+
+technicalTimingCircle = display.newCircle( (3* _W)/4 - _H/18,((2 * _H)/3) + (_H/18),technicalTimingCircleCurrentRadius )
 technicalTimingCircle:setFillColor(0,.6,.6)
+technicalCircleMode = "Decreasing"
 
-strongTimingCircle = display.newCircle( _W/4 - _H/18,(2 * _H)/3,strongTimingCircleCurrentRadius )
+strongTimingCircle = display.newCircle( _W/4 - _H/18,((2 * _H)/3) + (_H/18),strongTimingCircleCurrentRadius )
 strongTimingCircle:setFillColor(1,1,0)
+
+strongCircleMode = "Decreasing"
 
 function getOpponentsDefense(position)
   --standing
@@ -196,9 +201,7 @@ function handleOpponentAttack( defense )
       opponentScore = opponentScore + attackTable[selectedAttackValue][3]
       scoreText.text = "Plyr: " .. playerScore .. " Opp: " .. opponentScore
     end
-  
     
-  
     --5) Determine the next position
     --determine the next position that will appear on screen for success
     currentPosition = opponentPositionConverter[attackTable[selectedAttackValue][attackResult]]
@@ -230,21 +233,54 @@ end
 
 local function updateCircles()
   
-  local sceneGroup = self.view
-  
-  if circleMode == "Decreasing" then
+  if technicalCircleMode == "Decreasing" then
     technicalTimingCircleCurrentRadius = technicalTimingCircleCurrentRadius - 1
     if technicalTimingCircleCurrentRadius > 0 then
       
-      sceneGroup:remove(technicalTimingCircle)
+      circleSceneGroup:remove(technicalTimingCircle)
       technicalTimingCircle = display.newCircle( (3* _W)/4 - _H/18,(2 * _H)/3,technicalTimingCircleCurrentRadius )
       technicalTimingCircle:setFillColor(0,.6,.6)
-      sceneGroup:insert(technicalTimingCircle)
-      
+      circleSceneGroup:insert(technicalTimingCircle)
     else
-      circleMode = "Increasing"
+      technicalCircleMode = "Increasing"
     end
+  else
+    technicalTimingCircleCurrentRadius = technicalTimingCircleCurrentRadius + 1
+    if technicalTimingCircleCurrentRadius < circleMaxRadius then
+      
+      circleSceneGroup:remove(technicalTimingCircle)
+      technicalTimingCircle = display.newCircle( (3* _W)/4 - _H/18,(2 * _H)/3,technicalTimingCircleCurrentRadius )
+      technicalTimingCircle:setFillColor(0,.6,.6)  
+      circleSceneGroup:insert(technicalTimingCircle)
+    else
+      technicalCircleMode = "Decreasing"
+    end    
   end
+  
+  if strongCircleMode == "Decreasing" then
+    strongTimingCircleCurrentRadius = strongTimingCircleCurrentRadius - 2
+    if strongTimingCircleCurrentRadius > 0 then
+      
+      circleSceneGroup:remove(strongTimingCircle)
+      strongTimingCircle = display.newCircle( _W/4 - _H/18,(2 * _H)/3,strongTimingCircleCurrentRadius )
+      strongTimingCircle:setFillColor(1,1,0)
+      circleSceneGroup:insert(strongTimingCircle)
+    else
+      strongCircleMode = "Increasing"
+    end
+  else
+    strongTimingCircleCurrentRadius = strongTimingCircleCurrentRadius + 2
+    if strongTimingCircleCurrentRadius < circleMaxRadius then
+      
+      circleSceneGroup:remove(strongTimingCircle)
+      strongTimingCircle = display.newCircle( _W/4 - _H/18,(2 * _H)/3,strongTimingCircleCurrentRadius )
+      strongTimingCircle:setFillColor(1,1,0)
+      circleSceneGroup:insert(strongTimingCircle)
+    else
+      strongCircleMode = "Decreasing"
+    end    
+  end  
+  
 end
 
 function gameLoop(event)
@@ -252,14 +288,18 @@ function gameLoop(event)
   --if some condition then handleOpponentAttack
   timingLoopCounter = timingLoopCounter + 1
   
-  if (math.fmod(timingLoopCounter,10) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") and (attackHappening == false) then
+  if circleSceneGroup ~= nil then 
+      updateCircles()
+  end
+  
+  if (math.fmod(timingLoopCounter,360) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") and (attackHappening == false) then
     print(" math.fmod(timingLoopCounter,99)  " .. math.fmod(timingLoopCounter,99) )
     print("Inside gameloop event  " .. timingLoopCounter)
     -- if some random chance
     -- then perform an opponent attack
     defense = 5 --need to create getPlayersDefense(currentPosition)
-    --handleOpponentAttack( defense )
-    updateCircles()
+    handleOpponentAttack( defense )
+
   end
 end
 
@@ -280,18 +320,23 @@ function handlePlayerAttack( attackType,defense )
     --2) Determine if it is a Technical or Strong Attack
     --is it a technical or strong attack
     local tableIndex
+    local timing = nil
     if attackType == "Strong" then
       tableIndex = 1
+      timing = 2 * strongTimingCircleCurrentRadius
     else
       tableIndex = 2
+      timing = 2* technicalTimingCircleCurrentRadius
     end
+    
+    print ("Timing: " .. timing)
     
     --3) Find attack strength for the character
     --get the character's Attack strength for the given position and attack type
     local attackStrength = character[currentPosition][1][tableIndex]
     
     --player timing is random for now will need a get timing method
-    local timing = math.random(50,80)
+    
     
     --4) Find the attack result
     --determine attack result for that attack success
@@ -339,7 +384,10 @@ end
 function scene:create( event )
  
     local sceneGroup = self.view
+    
+    circleSceneGroup = sceneGroup 
     -- Code here runs when the scene is first created but has not yet appeared on screen
+    
     
     --Set Default Anchoring of Images to Top Left
     display.setDefault( "anchorX", 0)
