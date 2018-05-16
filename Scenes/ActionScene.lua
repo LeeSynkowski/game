@@ -84,6 +84,9 @@ technicalCircleMode = "Decreasing"
 strongTimingCircle = display.newCircle( _W/4 - _H/18,((2 * _H)/3) + (_H/18),strongTimingCircleCurrentRadius )
 strongTimingCircle:setFillColor(1,1,0)
 
+defenseBar = display.newRect(_W/2-(_W/16), (2*_H/3), _W/8, _H/9)
+defenseBar:setFillColor(.34,.34,.2)
+
 strongCircleMode = "Decreasing"
 
 function getOpponentsDefense(position)
