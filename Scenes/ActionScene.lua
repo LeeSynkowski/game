@@ -44,6 +44,9 @@ local attackHappening = false
 
 local circleSceneGroup = nil
 
+local defenseButtonDown = false
+local defenseBarCurrentHeight = 0
+
 function createAttackPicker( attackTable )
   local columnData = 
   { 
@@ -84,8 +87,8 @@ technicalCircleMode = "Decreasing"
 strongTimingCircle = display.newCircle( _W/4 - _H/18,((2 * _H)/3) + (_H/18),strongTimingCircleCurrentRadius )
 strongTimingCircle:setFillColor(1,1,0)
 
-defenseBar = display.newRect(_W/2-(_W/16), (2*_H/3), _W/8, _H/9)
-defenseBar:setFillColor(.34,.34,.2)
+defenseBar = nil
+defenseBarMaxHeight = _H/9
 
 strongCircleMode = "Decreasing"
 
@@ -148,7 +151,13 @@ local function handleTechnicalButton( event )
 end
 
 local function handleDefendButton(event)
-  
+    if ( "began" == event.phase ) then
+      defenseButtonDown = true
+    end
+    
+    if ( "ended" == event.phase ) then
+      defenseButtonDown = false
+    end
 end
 
 local function updateAttackStatsForPosition(position)
@@ -286,6 +295,29 @@ local function updateCircles()
   
 end
 
+local function updateDefense()
+  if (defenseButtonDown) then
+    --if its new, created a new one
+    if defenseBar == nil then
+      defenseBar = display.newRect(_W/2-(_W/16), (2*_H/3), _W/8, 0)
+      defenseBar:setFillColor(.0,.34,.2)
+      circleSceneGroup:insert(defenseBar)
+    end
+    circleSceneGroup:remove(defenseBar)
+    
+    if defenseBarCurrentHeight < defenseBarMaxHeight then
+      defenseBarCurrentHeight = defenseBarCurrentHeight + 1
+      defenseBar = display.newRect(_W/2-(_W/16), (2*_H/3), _W/8, defenseBarCurrentHeight)
+      defenseBar:setFillColor(.0,.34,.2)
+      circleSceneGroup:insert(defenseBar)
+    end
+
+  else
+    circleSceneGroup:remove(defenseBar)
+    defenseBar = nil
+  end
+end
+
 function gameLoop(event)
   --my looping actions go here
   --if some condition then handleOpponentAttack
@@ -294,6 +326,8 @@ function gameLoop(event)
   if circleSceneGroup ~= nil then 
       updateCircles()
   end
+  
+  updateDefense() 
   
   if (math.fmod(timingLoopCounter,360) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") and (attackHappening == false) then
     print(" math.fmod(timingLoopCounter,99)  " .. math.fmod(timingLoopCounter,99) )
