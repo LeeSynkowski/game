@@ -92,7 +92,7 @@ defenseBarMaxHeight = _H/9
 
 strongCircleMode = "Decreasing"
 
-function getOpponentsDefense(position)
+local function getOpponentsDefense(position)
   --standing
   if (position == "Standing") then
     return opponent["Standing Defense"] * 5--times multiplier
@@ -116,6 +116,37 @@ function getOpponentsDefense(position)
   --in a submission
   elseif (position == "Rear Naked Choke Defense") or (position == "Armbar Defense") or (position == "Collar Choke Defense") or (position == "Kimura Defense") or (position == "Americana Defense") or (position == "Anaconda Choke Defense") or (position == "Triangle Defense") or (position == "Omopalata Defense") then
     return opponent["Submission Defense"] 
+  else
+    return 1
+  end
+end
+
+local function getPlayersDefense(position)
+  local multiplier = math.abs(defenseBarCurrentHeight) / 5
+  print('multiplier: ' .. tostring(multiplier))
+  --standing
+  if (position == "Standing") then
+    return character["Standing Defense"] * multiplier 
+   
+  --top guard 
+  elseif (position == "Top Turtle") or (position == "Top Guard") or (position == "Top Half Guard") then
+    return character["Guard Passing Defense"] * multiplier 
+  
+  --bottom guard
+  elseif (position == "Bottom Half Guard") or (position == "Bottom Guard") or (position == "Bottom Turtle")   then
+    return character["Guard Defense"] * multiplier 
+  
+  --top control
+  elseif (position == "Top Rear Mount") or (position == "Top Mount") or (position == "Top Side Control")   then
+    return character["Top Defense"] * multiplier 
+  
+  --bottom position
+  elseif  (position == "Bottom Side Control") or (position == "Bottom Mount") or (position == "Bottom Rear Mount")  then
+    return character["Bottom Defense"] * multiplier 
+  
+  --in a submission
+  elseif (position == "Rear Naked Choke Defense") or (position == "Armbar Defense") or (position == "Collar Choke Defense") or (position == "Kimura Defense") or (position == "Americana Defense") or (position == "Anaconda Choke Defense") or (position == "Triangle Defense") or (position == "Omopalata Defense") then
+    return character["Submission Defense"] * multiplier 
   else
     return 1
   end
@@ -299,22 +330,29 @@ local function updateDefense()
   if (defenseButtonDown) then
     --if its new, created a new one
     if defenseBar == nil then
-      defenseBar = display.newRect(_W/2-(_W/16), (2*_H/3), _W/8, 0)
+      defenseBar = display.newRect(_W/2-(_W/16), (2*_H/3)+(_H/9), _W/8, 0)
       defenseBar:setFillColor(.0,.34,.2)
       circleSceneGroup:insert(defenseBar)
     end
-    circleSceneGroup:remove(defenseBar)
     
     if defenseBarCurrentHeight < defenseBarMaxHeight then
+      circleSceneGroup:remove(defenseBar)
       defenseBarCurrentHeight = defenseBarCurrentHeight + 1
-      defenseBar = display.newRect(_W/2-(_W/16), (2*_H/3), _W/8, defenseBarCurrentHeight)
+      defenseBar = display.newRect(_W/2-(_W/16), (2*_H/3)+(_H/9)-defenseBarCurrentHeight, _W/8, defenseBarCurrentHeight)
       defenseBar:setFillColor(.0,.34,.2)
       circleSceneGroup:insert(defenseBar)
     end
 
-  else
-    circleSceneGroup:remove(defenseBar)
-    defenseBar = nil
+    else
+  
+      if defenseBarCurrentHeight >= 0 then
+        circleSceneGroup:remove(defenseBar)
+        defenseBarCurrentHeight = defenseBarCurrentHeight - 3
+        defenseBar = display.newRect(_W/2-(_W/16), (2*_H/3)+(_H/9)-defenseBarCurrentHeight, _W/8,     defenseBarCurrentHeight)
+        defenseBar:setFillColor(.0,.34,.2)
+        circleSceneGroup:insert(defenseBar)
+      end
+
   end
 end
 
@@ -329,12 +367,12 @@ function gameLoop(event)
   
   updateDefense() 
   
-  if (math.fmod(timingLoopCounter,360) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") and (attackHappening == false) then
+  if (math.fmod(timingLoopCounter,60) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") and (attackHappening == false) then
     print(" math.fmod(timingLoopCounter,99)  " .. math.fmod(timingLoopCounter,99) )
     print("Inside gameloop event  " .. timingLoopCounter)
     -- if some random chance
     -- then perform an opponent attack
-    defense = 5 --need to create getPlayersDefense(currentPosition)
+    defense = getPlayersDefense(currentPosition)
     handleOpponentAttack( defense )
 
   end
