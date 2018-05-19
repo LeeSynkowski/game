@@ -42,6 +42,11 @@ local timingLoopCounter = 0
 
 local attackHappening = false
 
+local circleSceneGroup = nil
+
+local defenseButtonDown = false
+local defenseBarCurrentHeight = 0
+
 function createAttackPicker( attackTable )
   local columnData = 
   { 
@@ -69,7 +74,25 @@ end
 
 attackPicker = createAttackPicker( character[currentPosition][2] )
 
-function getOpponentsDefense(position)
+circleMaxRadius = _H/18
+
+technicalTimingCircleCurrentRadius = circleMaxRadius 
+strongTimingCircleCurrentRadius = circleMaxRadius 
+
+
+technicalTimingCircle = display.newCircle( (3* _W)/4 - _H/18,((2 * _H)/3) + (_H/18),technicalTimingCircleCurrentRadius )
+technicalTimingCircle:setFillColor(0,.6,.6)
+technicalCircleMode = "Decreasing"
+
+strongTimingCircle = display.newCircle( _W/4 - _H/18,((2 * _H)/3) + (_H/18),strongTimingCircleCurrentRadius )
+strongTimingCircle:setFillColor(1,1,0)
+
+defenseBar = nil
+defenseBarMaxHeight = _H/9
+
+strongCircleMode = "Decreasing"
+
+local function getOpponentsDefense(position)
   --standing
   if (position == "Standing") then
     return opponent["Standing Defense"] * 5--times multiplier
@@ -93,6 +116,37 @@ function getOpponentsDefense(position)
   --in a submission
   elseif (position == "Rear Naked Choke Defense") or (position == "Armbar Defense") or (position == "Collar Choke Defense") or (position == "Kimura Defense") or (position == "Americana Defense") or (position == "Anaconda Choke Defense") or (position == "Triangle Defense") or (position == "Omopalata Defense") then
     return opponent["Submission Defense"] 
+  else
+    return 1
+  end
+end
+
+local function getPlayersDefense(position)
+  local multiplier = math.abs(defenseBarCurrentHeight) / 5
+  print('multiplier: ' .. tostring(multiplier))
+  --standing
+  if (position == "Standing") then
+    return character["Standing Defense"] * multiplier 
+   
+  --top guard 
+  elseif (position == "Top Turtle") or (position == "Top Guard") or (position == "Top Half Guard") then
+    return character["Guard Passing Defense"] * multiplier 
+  
+  --bottom guard
+  elseif (position == "Bottom Half Guard") or (position == "Bottom Guard") or (position == "Bottom Turtle")   then
+    return character["Guard Defense"] * multiplier 
+  
+  --top control
+  elseif (position == "Top Rear Mount") or (position == "Top Mount") or (position == "Top Side Control")   then
+    return character["Top Defense"] * multiplier 
+  
+  --bottom position
+  elseif  (position == "Bottom Side Control") or (position == "Bottom Mount") or (position == "Bottom Rear Mount")  then
+    return character["Bottom Defense"] * multiplier 
+  
+  --in a submission
+  elseif (position == "Rear Naked Choke Defense") or (position == "Armbar Defense") or (position == "Collar Choke Defense") or (position == "Kimura Defense") or (position == "Americana Defense") or (position == "Anaconda Choke Defense") or (position == "Triangle Defense") or (position == "Omopalata Defense") then
+    return character["Submission Defense"] * multiplier 
   else
     return 1
   end
@@ -128,7 +182,13 @@ local function handleTechnicalButton( event )
 end
 
 local function handleDefendButton(event)
-  
+    if ( "began" == event.phase ) then
+      defenseButtonDown = true
+    end
+    
+    if ( "ended" == event.phase ) then
+      defenseButtonDown = false
+    end
 end
 
 local function updateAttackStatsForPosition(position)
@@ -184,9 +244,7 @@ function handleOpponentAttack( defense )
       opponentScore = opponentScore + attackTable[selectedAttackValue][3]
       scoreText.text = "Plyr: " .. playerScore .. " Opp: " .. opponentScore
     end
-  
     
-  
     --5) Determine the next position
     --determine the next position that will appear on screen for success
     currentPosition = opponentPositionConverter[attackTable[selectedAttackValue][attackResult]]
@@ -216,20 +274,107 @@ function handleOpponentAttack( defense )
     attackHappening = false
 end
 
+local function updateCircles()
+  
+  if technicalCircleMode == "Decreasing" then
+    technicalTimingCircleCurrentRadius = technicalTimingCircleCurrentRadius - 1
+    if technicalTimingCircleCurrentRadius > 0 then
+      
+      circleSceneGroup:remove(technicalTimingCircle)
+      technicalTimingCircle = display.newCircle( (3* _W)/4 - _H/18,(2 * _H)/3,technicalTimingCircleCurrentRadius )
+      technicalTimingCircle:setFillColor(0,.6,.6)
+      circleSceneGroup:insert(technicalTimingCircle)
+    else
+      technicalCircleMode = "Increasing"
+    end
+  else
+    technicalTimingCircleCurrentRadius = technicalTimingCircleCurrentRadius + 1
+    if technicalTimingCircleCurrentRadius < circleMaxRadius then
+      
+      circleSceneGroup:remove(technicalTimingCircle)
+      technicalTimingCircle = display.newCircle( (3* _W)/4 - _H/18,(2 * _H)/3,technicalTimingCircleCurrentRadius )
+      technicalTimingCircle:setFillColor(0,.6,.6)  
+      circleSceneGroup:insert(technicalTimingCircle)
+    else
+      technicalCircleMode = "Decreasing"
+    end    
+  end
+  
+  if strongCircleMode == "Decreasing" then
+    strongTimingCircleCurrentRadius = strongTimingCircleCurrentRadius - 2
+    if strongTimingCircleCurrentRadius > 0 then
+      
+      circleSceneGroup:remove(strongTimingCircle)
+      strongTimingCircle = display.newCircle( _W/4 - _H/18,(2 * _H)/3,strongTimingCircleCurrentRadius )
+      strongTimingCircle:setFillColor(1,1,0)
+      circleSceneGroup:insert(strongTimingCircle)
+    else
+      strongCircleMode = "Increasing"
+    end
+  else
+    strongTimingCircleCurrentRadius = strongTimingCircleCurrentRadius + 2
+    if strongTimingCircleCurrentRadius < circleMaxRadius then
+      
+      circleSceneGroup:remove(strongTimingCircle)
+      strongTimingCircle = display.newCircle( _W/4 - _H/18,(2 * _H)/3,strongTimingCircleCurrentRadius )
+      strongTimingCircle:setFillColor(1,1,0)
+      circleSceneGroup:insert(strongTimingCircle)
+    else
+      strongCircleMode = "Decreasing"
+    end    
+  end  
+  
+end
 
+local function updateDefense()
+  if (defenseButtonDown) then
+    --if its new, created a new one
+    if defenseBar == nil then
+      defenseBar = display.newRect(_W/2-(_W/16), (2*_H/3)+(_H/9), _W/8, 0)
+      defenseBar:setFillColor(.0,.34,.2)
+      circleSceneGroup:insert(defenseBar)
+    end
+    
+    if defenseBarCurrentHeight < defenseBarMaxHeight then
+      circleSceneGroup:remove(defenseBar)
+      defenseBarCurrentHeight = defenseBarCurrentHeight + 1
+      defenseBar = display.newRect(_W/2-(_W/16), (2*_H/3)+(_H/9)-defenseBarCurrentHeight, _W/8, defenseBarCurrentHeight)
+      defenseBar:setFillColor(.0,.34,.2)
+      circleSceneGroup:insert(defenseBar)
+    end
+
+    else
+  
+      if defenseBarCurrentHeight >= 0 then
+        circleSceneGroup:remove(defenseBar)
+        defenseBarCurrentHeight = defenseBarCurrentHeight - 3
+        defenseBar = display.newRect(_W/2-(_W/16), (2*_H/3)+(_H/9)-defenseBarCurrentHeight, _W/8,     defenseBarCurrentHeight)
+        defenseBar:setFillColor(.0,.34,.2)
+        circleSceneGroup:insert(defenseBar)
+      end
+
+  end
+end
 
 function gameLoop(event)
   --my looping actions go here
   --if some condition then handleOpponentAttack
   timingLoopCounter = timingLoopCounter + 1
   
+  if circleSceneGroup ~= nil then 
+      updateCircles()
+  end
+  
+  updateDefense() 
+  
   if (math.fmod(timingLoopCounter,60) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") and (attackHappening == false) then
     print(" math.fmod(timingLoopCounter,99)  " .. math.fmod(timingLoopCounter,99) )
     print("Inside gameloop event  " .. timingLoopCounter)
     -- if some random chance
     -- then perform an opponent attack
-    defense = 5 --need to create getPlayersDefense(currentPosition)
+    defense = getPlayersDefense(currentPosition)
     handleOpponentAttack( defense )
+
   end
 end
 
@@ -250,18 +395,23 @@ function handlePlayerAttack( attackType,defense )
     --2) Determine if it is a Technical or Strong Attack
     --is it a technical or strong attack
     local tableIndex
+    local timing = nil
     if attackType == "Strong" then
       tableIndex = 1
+      timing = 2 * strongTimingCircleCurrentRadius
     else
       tableIndex = 2
+      timing = 2* technicalTimingCircleCurrentRadius
     end
+    
+    print ("Timing: " .. timing)
     
     --3) Find attack strength for the character
     --get the character's Attack strength for the given position and attack type
     local attackStrength = character[currentPosition][1][tableIndex]
     
     --player timing is random for now will need a get timing method
-    local timing = math.random(50,80)
+    
     
     --4) Find the attack result
     --determine attack result for that attack success
@@ -309,7 +459,10 @@ end
 function scene:create( event )
  
     local sceneGroup = self.view
+    
+    circleSceneGroup = sceneGroup 
     -- Code here runs when the scene is first created but has not yet appeared on screen
+    
     
     --Set Default Anchoring of Images to Top Left
     display.setDefault( "anchorX", 0)
@@ -458,6 +611,10 @@ function scene:create( event )
     sceneGroup:insert( opponentAttackStats  )
     
     updateAttackStatsForPosition(currentPosition)
+    
+    sceneGroup:insert(strongTimingCircle)
+    
+    sceneGroup:insert(technicalTimingCircle)
 
 end
 
