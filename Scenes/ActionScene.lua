@@ -494,14 +494,21 @@ function scene:create( event )
 
     local strongButton = widget.newButton(
         {
-            label = "Strong",
+            --label = "Strong",
+            --onEvent = handleStrongButton,
+            --emboss = false,
+            --shape = "circle",
+            --radius= 1/18 * _H,
+            --fillColor = { default={1,0.6,0,1}, over={1,0.1,0.7,0.4} },
+            --strokeColor = { default={1,0.4,0,1}, over={0.8,0.8,1,1} },
+            --strokeWidth = 4,
+            --top = (7 * _H) / 9 + 1/36 * _H,
+            --left = _W/2 + 1/36 * _H
+            width = 1/9 * _H,
+            height = 1/9 * _H,
+            defaultFile = "Images/strongButtonUp.png",
+            overFile = "Images/strongButtonDown.png",
             onEvent = handleStrongButton,
-            emboss = false,
-            shape = "circle",
-            radius= 1/18 * _H,
-            fillColor = { default={1,0.6,0,1}, over={1,0.1,0.7,0.4} },
-            strokeColor = { default={1,0.4,0,1}, over={0.8,0.8,1,1} },
-            strokeWidth = 4,
             top = (7 * _H) / 9 + 1/36 * _H,
             left = _W/2 + 1/36 * _H
         }
