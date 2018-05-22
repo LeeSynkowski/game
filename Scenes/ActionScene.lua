@@ -504,44 +504,59 @@ function scene:create( event )
             --strokeWidth = 4,
             --top = (7 * _H) / 9 + 1/36 * _H,
             --left = _W/2 + 1/36 * _H
-            width = 1/9 * _H,
-            height = 1/9 * _H,
+            width = 3/18 * _H,
+            height = 3/18 * _H,
             defaultFile = "Images/strongButtonUp.png",
             overFile = "Images/strongButtonDown.png",
             onEvent = handleStrongButton,
             top = (7 * _H) / 9 + 1/36 * _H,
-            left = _W/2 + 1/36 * _H
+            left = _W/2 -- + 1/36 * _H
         }
     )
     sceneGroup:insert( strongButton  )
 
     local technicalButton = widget.newButton(
         {
-            label = "Tech",
-            onEvent = handleTechnicalButton,
-            emboss = false,
-            shape = "circle",
-            radius= 1/18 * _H,
-            fillColor = { default={0.7,0.8,0,1}, over={1,0.1,0.7,0.4} },
-            strokeColor = { default={1,0.4,0,1}, over={0.8,0.8,1,1} },
-            strokeWidth = 4,
+            --label = "Tech",
+            --onEvent = handleTechnicalButton,
+            --emboss = false,
+            --shape = "circle",
+            --radius= 1/18 * _H,
+            --fillColor = { default={0.7,0.8,0,1}, over={1,0.1,0.7,0.4} },
+            --strokeColor = { default={1,0.4,0,1}, over={0.8,0.8,1,1} },
+            --strokeWidth = 4,
+            --top = _H - (_H/9) - 1/144 * _H,
+            --left = (3 * _W)/4 + 1/72 * _H -- * _H
+            width = 3/18 * _H,
+            height = 3/18 * _H,
+            defaultFile = "Images/techButtonUp.png",
+            overFile = "Images/techButtonDown.png",
+            onEvent = handleStrongButton,
             top = _H - (_H/9) - 1/144 * _H,
-            left = (3 * _W)/4 + 1/72 * _H -- * _H
+            left = (3 * _W)/4 + 1/72 * _H
+            
         }
     )
     sceneGroup:insert( technicalButton  )
     
     local defenseButton = widget.newButton(
         {
-            label = "Defend",
-            onEvent = handleDefendButton,
-            emboss = false,
-            shape = "circle",
-            radius= 1/36 * _H,
-            fillColor = { default={0.7,0.8,0,1}, over={1,0.1,0.7,0.4} },
-            strokeColor = { default={1,0.4,0,1}, over={0.8,0.8,1,1} },
-            strokeWidth = 4,
-            top = (7 * _H) / 9 + 1/36 * _H,
+            --label = "Defend",
+            --onEvent = handleDefendButton,
+            --emboss = false,
+            --shape = "circle",
+            --radius= 1/36 * _H,
+            --fillColor = { default={0.7,0.8,0,1}, over={1,0.1,0.7,0.4} },
+            --strokeColor = { default={1,0.4,0,1}, over={0.8,0.8,1,1} },
+            --strokeWidth = 4,
+            --top = (7 * _H) / 9 + 1/36 * _H,
+            --left = _W - (5/36 * _H)
+            width = 3/18 * _H,
+            height = 3/18 * _H,
+            defaultFile = "Images/defendButtonUp.png",
+            overFile = "Images/defendButtonDown.png",
+            onEvent = handleStrongButton,
+            top = (2 * _H) / 3,--(7 * _H) / 9 + 1/36 * _H,
             left = _W - (5/36 * _H)
         }
     )
