@@ -367,7 +367,7 @@ function gameLoop(event)
   
   updateDefense() 
   
-  if (math.fmod(timingLoopCounter,60) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") and (attackHappening == false) then
+  if (math.fmod(timingLoopCounter,600) == 0) and (currentPosition ~= "Submission") and (currentPosition ~= "Tap") and (attackHappening == false) then
     print(" math.fmod(timingLoopCounter,99)  " .. math.fmod(timingLoopCounter,99) )
     print("Inside gameloop event  " .. timingLoopCounter)
     -- if some random chance
@@ -509,7 +509,7 @@ function scene:create( event )
             defaultFile = "Images/strongButtonUp.png",
             overFile = "Images/strongButtonDown.png",
             onEvent = handleStrongButton,
-            top = (7 * _H) / 9 + 1/36 * _H,
+            top = (8 * _H) / 9 - (2 * _H/36), --+ 1/36 * _H,
             left = _W/2 -- + 1/36 * _H
         }
     )
@@ -531,8 +531,8 @@ function scene:create( event )
             height = 3/18 * _H,
             defaultFile = "Images/techButtonUp.png",
             overFile = "Images/techButtonDown.png",
-            onEvent = handleStrongButton,
-            top = _H - (_H/9) - 1/144 * _H,
+            onEvent = handleTechnicalButton,
+            top = (8*_H/9) - (2 * _H/36),-- - 1/144 * _H,
             left = (3 * _W)/4 + 1/72 * _H
             
         }
@@ -555,9 +555,9 @@ function scene:create( event )
             height = 3/18 * _H,
             defaultFile = "Images/defendButtonUp.png",
             overFile = "Images/defendButtonDown.png",
-            onEvent = handleStrongButton,
-            top = (2 * _H) / 3,--(7 * _H) / 9 + 1/36 * _H,
-            left = _W - (5/36 * _H)
+            onEvent = handleDefendButton,
+            top = (7 * _H) / 9 - (2 * _H/36), --+ 1/36 * _H,
+            left = (3 * _W /4) - (3 * _H/36)
         }
     )
     sceneGroup:insert( defenseButton  )
