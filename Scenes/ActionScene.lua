@@ -51,24 +51,26 @@ function createAttackPicker( attackTable )
   local columnData = 
   { 
       { 
-          align = "right",
-          width = _W / 2,
+          align = "center",
+          --width = _W / 2,
           labelPadding = 10,
           startIndex = 1,
           labels = attackTable
       }
   }
 
-  return widget.newPickerWheel(
+  local pw = widget.newPickerWheel(
   {
       x = 0, 
-      y = (7 * _H) / 9,
+      y = (4* _H) / 5,
       columns = columnData,
       style = "resizable",
-      width = _W,
-      rowHeight = ((2 * _H) / 9)/5,
-      fontSize = 20
+      width = _W - (_H/3),
+      rowHeight = 25,
+      fontSize = 30
   })   
+
+  return pw
 
 end
 
@@ -475,13 +477,19 @@ function scene:create( event )
     local infoArea = display.newRect( 0, (2 * _H) / 3, _W, (_H) / 9)
     infoArea:setFillColor( 1, 0, 0 )
 
-    local menuArea = display.newRect( 0, (7 * _H) / 9, _W, (2 * _H) / 9)
-    menuArea:setFillColor( 0, 0, 1 )
+    local buttonArea = display.newRect( _W - _H/3, 0, _H/3, _H)
+    local buttonPaint = {
+        type = "gradient",
+        color1 = { 0.8745098039215686, 0.2588235294117647, 1 },
+        color2 = { 0.7019607843137255, 0.1098039215686275, 1 },
+        direction = "down"
+    }
+    buttonArea.fill = buttonPaint
 
     --Keep this for adding scence structure
     sceneGroup:insert( graphicsArea  )
     sceneGroup:insert( infoArea  )
-    sceneGroup:insert( menuArea  )
+    sceneGroup:insert( buttonArea  )
     
     local function attackValueSelected (event)
       selectedAttackValue = attackValues[event["row"]]
@@ -504,13 +512,13 @@ function scene:create( event )
             --strokeWidth = 4,
             --top = (7 * _H) / 9 + 1/36 * _H,
             --left = _W/2 + 1/36 * _H
-            width = 3/18 * _H,
-            height = 3/18 * _H,
+            width = _H/3,
+            height = _H/3,
             defaultFile = "Images/strongButtonUp.png",
             overFile = "Images/strongButtonDown.png",
             onEvent = handleStrongButton,
-            top = (8 * _H) / 9 - (2 * _H/36), --+ 1/36 * _H,
-            left = _W/2 -- + 1/36 * _H
+            top = (2 * _H)/3,--(8 * _H) / 9 - (2 * _H/36), --+ 1/36 * _H,
+            left = _W - _H/3-- + 1/36 * _H
         }
     )
     sceneGroup:insert( strongButton  )
@@ -527,13 +535,13 @@ function scene:create( event )
             --strokeWidth = 4,
             --top = _H - (_H/9) - 1/144 * _H,
             --left = (3 * _W)/4 + 1/72 * _H -- * _H
-            width = 3/18 * _H,
-            height = 3/18 * _H,
+            width = _H/3,
+            height = _H/3,
             defaultFile = "Images/techButtonUp.png",
             overFile = "Images/techButtonDown.png",
             onEvent = handleTechnicalButton,
-            top = (8*_H/9) - (2 * _H/36),-- - 1/144 * _H,
-            left = (3 * _W)/4 + 1/72 * _H
+            top = (1 * _H)/3,-- - 1/144 * _H,
+            left = _W - _H/3
             
         }
     )
@@ -551,13 +559,13 @@ function scene:create( event )
             --strokeWidth = 4,
             --top = (7 * _H) / 9 + 1/36 * _H,
             --left = _W - (5/36 * _H)
-            width = 3/18 * _H,
-            height = 3/18 * _H,
+            width = _H/3,
+            height = _H/3,
             defaultFile = "Images/defendButtonUp.png",
             overFile = "Images/defendButtonDown.png",
             onEvent = handleDefendButton,
-            top = (7 * _H) / 9 - (2 * _H/36), --+ 1/36 * _H,
-            left = (3 * _W /4) - (3 * _H/36)
+            top = 0, --(7 * _H) / 9 - (2 * _H/36), --+ 1/36 * _H,
+            left = _W - _H/3
         }
     )
     sceneGroup:insert( defenseButton  )
